@@ -46,24 +46,7 @@ ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Wi
 
 升级时先在旧版点击“退出程序”，退出后再打开新包。新包继续使用原本的本机数据目录；0.6.0 及更早版本仅关闭浏览器可能仍保留后台服务。
 
-### 从源码准备并运行
 
-以下命令在 **Windows 项目根目录的 PowerShell** 中执行。已验证的开发环境为 Python **3.10.6 x64**、Node.js **24.22.1**；需先准备 Python 3.10 和 Node.js／npm。安装依赖时需要网络，完成后源码版也可在本机离线运行。
-
-```powershell
-# 创建 Python 环境并安装锁定依赖
-py -3.10 -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.lock.txt
-
-# 安装前端依赖并生成正式界面
-npm.cmd --prefix frontend ci
-npm.cmd --prefix frontend run build
-
-# 启动源码版的独立桌面窗口
-.\.venv\Scripts\python.exe -m backend.launcher
-```
-
-源码运行需要 `models/u2netp.onnx`、`Logos/`、`frontend/public/fonts/` 等项目资源，以及刚构建的 `frontend/dist/`。依赖分别锁定于 [requirements.lock.txt](requirements.lock.txt) 和 [frontend/package-lock.json](frontend/package-lock.json)。
 
 ## 使用方法
 
@@ -94,52 +77,7 @@ npm.cmd --prefix frontend run build
 
 完整操作与参数说明见 [使用说明](docs/使用说明.md)，也可在程序顶部“信息”中离线阅读。
 
-## 输入输出示例
 
-### 示例一：图片素材合成封面
-
-输入文件名仅作示意，可使用自己的图片：
-
-```text
-输入：background.jpg（底图）＋ track.png（透明轨道）
-文字：第一行“示例曲目”，第二行“全连演示”
-设置：16:9 画布、文字光效、轨道位置和大小
-导出文件名：示例封面
-输出：示例封面.png，1920 × 1080
-```
-
-切换到 4:3 并调整排版后，可再导出 **1440 × 1080 PNG**。操作框、手柄和编辑器界面不会进入封面图片。
-
-### 示例二：由 `.adofai` 生成轨道与曲目信息
-
-以下是本制作器可读取的最小静态轨道示例，保存为 UTF-8 文件 `demo.adofai`：
-
-```json
-{
-  "angleData": [0, 0, 90, 180, 270],
-  "settings": {
-    "song": "示例曲目",
-    "artist": "示例音乐作者",
-    "bpm": 100,
-    "trackColor": "336699"
-  },
-  "actions": [
-    {
-      "floor": 1,
-      "eventType": "SetSpeed",
-      "speedType": "Bpm",
-      "beatsPerMinute": 200
-    },
-    { "floor": 3, "eventType": "Twirl" }
-  ]
-}
-```
-
-导入后选择砖块 **0—5**，共 6 块，设置 16:9、长边 3840，然后“生成并预览”：
-
-- 单独导出轨道 PNG：`轨道-0-5-3840.png`，**3840 × 2160**，背景透明；也可从选段窗口导出 SVG。
-- 勾选两个曲目信息选项并应用：新增“示例曲目”和“示例音乐作者”两个独立白色标题，可继续编辑。
-- 将轨道用于封面后，顶部“导出图片”仍按封面画布输出 **1920 × 1080**；轨道素材的 4K 分辨率不改变最终封面尺寸。
 
 ### 支持的输入与输出范围
 
@@ -158,55 +96,7 @@ npm.cmd --prefix frontend run build
 
 顶部显示“已保存到本机”表示最新修改已写入。关闭桌面窗口或点击“退出程序”时会先保存；保存失败会保留窗口和内容，供重试。需要备份时，退出程序后复制整个数据目录。
 
-## 已知范围与验证记录
 
-- 去背景主要面向纯色／暗色规则纹理背景。当前 9 张已确认标注的 `test_2` 截图逐张自动结果 IoU≥90%；这是该组样本的验收结果，不代表任意复杂背景截图都有相同效果。复杂背景可使用候选结果和画笔修正。
-- 谱面生成目前还原基础静态方向和 PositionTrack 位移；静态缩放、粘性轨道尚未完整还原，不重现轨道动画、镜头、装饰、特效和色彩动画。石纹与图标为参考图风格重绘，外观需对照验收。
-- 当前实际测试主机为 Windows 11 x64。Windows 10、第二台电脑、实际系统重启及操作系统断网的完整流程仍需按 [实机验收清单](docs/MANUAL_ACCEPTANCE.md) 检查。
-- 0.8.0 在 2026-11-11 的完整验证记录为：前端 45 项、Python 463 项、额外用户谱面 15 项，共 523 项通过，无失败、无跳过。详见 [开发与验收报告](docs/DEVELOPMENT_STATUS.md) 和 [0.8.0 开发记录](docs/UPGRADE_080_PROGRESS.md)。
-
-## 源码打包与检查
-
-前端使用 React／TypeScript、Canvas、PixiJS Filters 和 three.js，后端使用 Python／FastAPI／SQLite，桌面窗口使用 PySide6／Qt WebEngine，Windows 打包使用 PyInstaller。
-
-### 构建 Windows 分发包
-
-仓库的打包和全量检查脚本使用 `tools/npm/package/bin/npm-cli.js`。当前工作区已准备该工具；新检出可先按下面的固定版本准备，再执行打包：
-
-```powershell
-# 在项目内准备脚本所需的 npm 工具（需要 Node.js 和可用的 npm）
-New-Item -ItemType Directory -Force tools/npm | Out-Null
-npm.cmd pack npm@12.2.2 --pack-destination tools/npm
-tar -xf tools/npm/npm-12.2.2.tgz -C tools/npm
-
-# 已完成前文 Python／前端依赖安装后，构建完整 EXE 目录及 ZIP
-.\packaging\build-windows.ps1
-```
-
-默认输出为 `dist/0.8.0/ADOFAI-Cover-Studio/` 和 `release/ADOFAI-Cover-Studio-0.8.0-windows-x64.zip`，同时生成 SHA-256 文件。构建时收集依赖许可，首次准备依赖与许可资料需要网络；成品运行不下载组件。
-
-### 运行检查
-
-```powershell
-# 使用已安装的 npm 检查前端
-npm.cmd --prefix frontend run typecheck
-npm.cmd --prefix frontend run lint
-npm.cmd --prefix frontend run test
-npm.cmd --prefix frontend run build
-
-# 完整测试仍保留历史 P0 冻结程序检查，先构建对应原型
-.\packaging\build-p0.ps1
-
-# 已构建正式包、准备项目内 npm 工具及验收素材后，运行全部常规检查
-.\tools\test-all.ps1
-
-# 额外验证本机 generate_test/ 中的四份用户谱面
-.\.venv\Scripts\python.exe -m pytest experiments/test_static_track_samples.py experiments/test_static_track_editor_samples.py -q
-```
-
-测试使用临时作品目录。开发测试需要已安装的 Microsoft Edge；内置引擎测试直接运行 Qt，成品用户无需安装 Edge。完整测试还依赖本机验收原图及批准标注，原图需与 [历史素材清单](test-assets/manifest.json) 和 [当前九张识别样本清单](test-assets/solid/manifest.json) 匹配；额外 15 项测试需要 `generate_test/` 中的四份原谱面。准备说明见 [验收素材说明](test-assets/README.md)。这些私人原图、原谱面和构建产物不随 Git 提交或成品分发；新检出缺少时不能视为已经具备完整测试环境。
-
-`tools/test-all.ps1` 会运行类型检查、lint、前端测试、生产构建和全部常规 pytest，并把结果写入 `artifacts/final/`；任何一项失败均返回非零退出码。
 
 ## 项目文档
 
