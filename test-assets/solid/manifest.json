@@ -1,0 +1,127 @@
+{
+  "scope": "User-provided test_2 solid/dark patterned backgrounds; track outline/interior/icons, exclude balls/particles/decoration.",
+  "thresholds": {
+    "intersection_over_union_min": 0.9
+  },
+  "annotation_method": "Independent per-image color selections with manual cleanup; awaiting human review, never production output.",
+  "samples": [
+    {
+      "id": "solid-01",
+      "file": "testscreenshots/test_2/Screenshot 2026-11-06 125645.png",
+      "sha256": "4dd398fba55cde1c39ab27fe9194e6a553794072619c630cd0acc493f13a5177",
+      "size": [
+        1767,
+        1165
+      ],
+      "ground_truth": "annotations/solid-01.png",
+      "annotation_approved": true,
+      "annotation_sha256": "13cffac5d2cc237b9e173bd47f0ccb2e213bff8b88172f43262fb29528f245ef",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    },
+    {
+      "id": "solid-02",
+      "file": "testscreenshots/test_2/Screenshot 2026-11-06 125703.png",
+      "sha256": "3a36d46347397fe49ca7f979c161c000e293db0b1bf81cd3d8cf1175296603ef",
+      "size": [
+        1751,
+        1019
+      ],
+      "ground_truth": "annotations/solid-02.png",
+      "annotation_approved": true,
+      "annotation_sha256": "ee0c08447d0c6ee7ab29fc139678d7059e859f86293c8577e173d6d8a02667eb",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    },
+    {
+      "id": "solid-03",
+      "file": "testscreenshots/test_2/Screenshot 2026-11-06 234604.png",
+      "sha256": "7db2e6a14b9a5640cb4a721e8cfe273eb4dbe01dabfe88a83b9a3f1a61592e94",
+      "size": [
+        1381,
+        1004
+      ],
+      "ground_truth": "annotations/solid-03.png",
+      "annotation_approved": true,
+      "annotation_sha256": "977e62bf207b5f8e784d6a3799bcb6ac368586d381b066530ad3958b2b1738ce",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    },
+    {
+      "id": "solid-04",
+      "file": "testscreenshots/test_2/Screenshot 2026-11-07 234436.png",
+      "sha256": "93030c5293297663591ce4679562ee71780725b9445f3fa91f6aad04ec8d2413",
+      "size": [
+        1612,
+        1043
+      ],
+      "ground_truth": "annotations/solid-04.png",
+      "annotation_approved": true,
+      "annotation_sha256": "0b88a1d5ae65c8de85c1fcfcad9ddde5fa92a713bc1287c6155fc4231af07175",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    },
+    {
+      "id": "solid-05",
+      "file": "testscreenshots/test_2/屏幕截图 2025-02-11 101408.png",
+      "sha256": "bf27adc076054bc864d78be9f9653b4eaf1ca2ee813b15ab8559091af220883d",
+      "size": [
+        785,
+        726
+      ],
+      "ground_truth": "annotations/solid-05.png",
+      "annotation_approved": true,
+      "annotation_sha256": "0035a5586dce20d3a627f52ddc5e7bf0bc271193df0e6024021c337710e6e914",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    },
+    {
+      "id": "solid-06",
+      "file": "testscreenshots/test_2/屏幕截图 2025-03-22 125350.png",
+      "sha256": "d2b8c00a80f33dcb5c5cc969f97a23b5b34341dd9b7ed403103ea743d5708c99",
+      "size": [
+        1469,
+        900
+      ],
+      "ground_truth": "annotations/solid-06.png",
+      "annotation_approved": true,
+      "annotation_sha256": "48a31124275f29d2c599bf9d45ce10ae984f24d46967f1c38ce668284920a76c",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    },
+    {
+      "id": "solid-07",
+      "file": "testscreenshots/test_2/屏幕截图 2025-03-22 125521.png",
+      "sha256": "a4a734e15593b0287647172fdf4ddebfb38f3232855aa343523daa27ddd2eef7",
+      "size": [
+        641,
+        863
+      ],
+      "ground_truth": "annotations/solid-07.png",
+      "annotation_approved": true,
+      "annotation_sha256": "f772c7bd04285a0e492fcf05478dfa12515fdf675aa83912a078b65d839a7103",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    },
+    {
+      "id": "solid-08",
+      "file": "testscreenshots/test_2/屏幕截图 2025-04-03 180406.png",
+      "sha256": "6a6676f3005dc54c20526a2a79f61c1b24e68065582d06dd501bae7bc12bf84d",
+      "size": [
+        1538,
+        757
+      ],
+      "ground_truth": "annotations/solid-08.png",
+      "annotation_approved": true,
+      "annotation_sha256": "788de0cd0164176fca2eb6ad22a08f2ab11ceba14bb91f940c1e2ba07ef14f96",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    },
+    {
+      "id": "solid-09",
+      "file": "testscreenshots/test_2/屏幕截图 2025-04-03 180442.png",
+      "sha256": "50d0e8d3761351e40f12f25595d970ead9ff06aa2e2beb8a2ada127f06ecebcc",
+      "size": [
+        1613,
+        753
+      ],
+      "ground_truth": "annotations/solid-09.png",
+      "annotation_approved": true,
+      "annotation_sha256": "906c9a722688b211240734da1ced8e7949810bb7c005f4bf24d96e14a9f50914",
+      "approval": "User explicitly approved all nine original/overlay/cutout review sheets on 2026-11-09."
+    }
+  ],
+  "annotation_status": "APPROVED_AND_FROZEN"
+}

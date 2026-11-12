@@ -1,0 +1,106 @@
+{
+  "product": "ADOFAI Cover Studio",
+  "version": "0.8.0",
+  "author": "ZAC688",
+  "portable_filter_presets": true,
+  "existing_filters_folded_by_default": true,
+  "delete_object_key": true,
+  "toolbar_uploads": true,
+  "offline_information_dialog": true,
+  "new_level_sticker_order": "P-first-natural,crazy-last",
+  "architecture": "windows-x64",
+  "browser": "embedded Qt WebEngine 6.140.0",
+  "offline_resources_included": true,
+  "max_titles": 5,
+  "max_tracks": 5,
+  "stackable_effects": true,
+  "offline_fonts_and_upload": true,
+  "sticker_preset_count": 253,
+  "max_stickers": null,
+  "gif_static_frame_selection": true,
+  "gradient_lights_and_shadows": true,
+  "fusion_editor": "smooth-gradient-mask",
+  "legacy_fusion_modes": [
+    "normal",
+    "multiply",
+    "screen",
+    "overlay",
+    "soft-light",
+    "add"
+  ],
+  "pixi_filters": 38,
+  "filter_scopes": [
+    "objects",
+    "canvas",
+    "rectangle",
+    "soft-brush"
+  ],
+  "offline_font_faces": 10,
+  "natural_sticker_order": true,
+  "default_glow": 0,
+  "per_object_filter_management": true,
+  "collapsible_filters_and_reset": true,
+  "precise_filter_sliders": true,
+  "offscreen_light_effects_worker": true,
+  "outline_during_transform_only": true,
+  "text3d": true,
+  "three_version": "0.187.0",
+  "recognition_model": "solid-background-geometry; u2netp complex-image candidate fallback",
+  "recognition_quality_status": "SOLID_TEST_2_EACH_IOU_GE_90_PASSED",
+  "recognition_acceptance_samples": 9,
+  "historical_complex_quality": "NOT_PASSED_NOT_CURRENT_SCOPE",
+  "tested_host": "Windows NT 10.0.22621.0 x64; bundled Qt 6.12.0 / WebEngine 6.140.0; Edge 157 regression",
+  "second_machine_and_physical_reboot": "NOT_VERIFIED",
+  "supported_platforms": [
+    "Windows 10 1809+ x64",
+    "Windows 11 x64"
+  ],
+  "external_browser_required": false,
+  "runtime_download_on_start": false,
+  "desktop_runtime": {
+    "pyside6": "6.12.0",
+    "qt": "6.12.0",
+    "webengine": "6.140.0"
+  },
+  "generated_tracks": true,
+  "chart_input_max_bytes": 10000000,
+  "chart_max_segments": 20000,
+  "chart_styles": [
+    "gold",
+    "chart"
+  ],
+  "chart_default_style": "gold",
+  "persistent_chart_recipes": true,
+  "chart_resolution_long_edges": [
+    1920,
+    2560,
+    3840,
+    4096
+  ],
+  "chart_layout_limits": "Static directions and PositionTrack translation only; scale/sticky-floor semantics not fully reproduced",
+  "windows_10_machine": "NOT_VERIFIED",
+  "reference_track_details": "mitered-corners-pitted-stone-layered-icons",
+  "optional_song_artist_titles": true,
+  "song_artist_default_checked": false,
+  "application_icon": "header-logo",
+  "application_icon_sizes": [
+    16,
+    24,
+    32,
+    48,
+    64,
+    128,
+    256
+  ],
+  "portable_text_presets": true,
+  "text_preset_preserves": [
+    "content",
+    "position",
+    "object-rotation"
+  ],
+  "text_preset_resources": [
+    "uploaded-font",
+    "filter-texture",
+    "filter-mask"
+  ]
+}

@@ -1,0 +1,167 @@
+{
+  "scope": "Only genuine user-provided screenshots count toward the real-data gate.",
+  "thresholds": {
+    "track_recall_min": 0.9,
+    "background_residual_max": 0.05
+  },
+  "samples": [
+    {
+      "id": "user-reference",
+      "file": "reference/user-reference.png",
+      "category": "dark",
+      "level": "user-reference-unknown-level",
+      "split": "development",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "User supplied Screenshot 2026-11-07 234436.png"
+    },
+    {
+      "id": "sample-01",
+      "file": "reference/sample-01.png",
+      "category": "complex",
+      "level": "city",
+      "split": "development",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-02-15 183100.png",
+      "approval": null
+    },
+    {
+      "id": "sample-02",
+      "file": "reference/sample-02.png",
+      "category": "complex",
+      "level": "city",
+      "split": "development",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-02-15 185557.png",
+      "approval": null
+    },
+    {
+      "id": "sample-03",
+      "file": "reference/sample-03.png",
+      "category": "complex",
+      "level": "city",
+      "split": "development",
+      "ground_truth": "annotations/sample-03.png",
+      "annotation_approved": true,
+      "source": "testscreenshots\\屏幕截图 2025-02-15 185607.png",
+      "approval": "User explicitly approved the three draft review images on 2026-11-09"
+    },
+    {
+      "id": "sample-04",
+      "file": "reference/sample-04.png",
+      "category": "complex",
+      "level": "sample-04",
+      "split": "development",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-02-23 105342.png",
+      "approval": null
+    },
+    {
+      "id": "sample-05",
+      "file": "reference/sample-05.png",
+      "category": "complex",
+      "level": "sample-05",
+      "split": "development",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-03-14 231356.png",
+      "approval": null
+    },
+    {
+      "id": "sample-06",
+      "file": "reference/sample-06.png",
+      "category": "complex",
+      "level": "checker",
+      "split": "development",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-03-22 125350.png",
+      "approval": null
+    },
+    {
+      "id": "sample-07",
+      "file": "reference/sample-07.png",
+      "category": "complex",
+      "level": "sample-07",
+      "split": "development",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-04-12 085640.png",
+      "approval": null
+    },
+    {
+      "id": "sample-08",
+      "file": "reference/sample-08.png",
+      "category": "complex",
+      "level": "sample-08",
+      "split": "holdout",
+      "ground_truth": "annotations/sample-08.png",
+      "annotation_approved": true,
+      "source": "testscreenshots\\屏幕截图 2025-05-10 172023.png",
+      "approval": "User explicitly approved the three draft review images on 2026-11-09"
+    },
+    {
+      "id": "sample-09",
+      "file": "reference/sample-09.png",
+      "category": "complex",
+      "level": "checker",
+      "split": "development",
+      "ground_truth": "annotations/sample-09.png",
+      "annotation_approved": true,
+      "source": "testscreenshots\\屏幕截图 2025-05-24 153246.png",
+      "approval": "User explicitly approved the three draft review images on 2026-11-09"
+    },
+    {
+      "id": "sample-10",
+      "file": "reference/sample-10.png",
+      "category": "complex",
+      "level": "bokeh",
+      "split": "holdout",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-05-31 223312.png",
+      "approval": null
+    },
+    {
+      "id": "sample-11",
+      "file": "reference/sample-11.png",
+      "category": "complex",
+      "level": "bokeh",
+      "split": "holdout",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-05-31 223339.png",
+      "approval": null
+    },
+    {
+      "id": "sample-12",
+      "file": "reference/sample-12.png",
+      "category": "complex",
+      "level": "sample-12",
+      "split": "holdout",
+      "ground_truth": null,
+      "annotation_approved": false,
+      "source": "testscreenshots\\屏幕截图 2025-06-21 153402.png",
+      "approval": null
+    },
+    {
+      "id": "background-fixture",
+      "file": "reference/sample-08.png",
+      "category": "background",
+      "source": "User screenshot reused strictly as a background-upload fixture, not an independent recognition sample"
+    },
+    {
+      "id": "transparent-fixture",
+      "file": "reference/transparent-fixture.png",
+      "category": "transparent",
+      "source": "Real user image cut using independently traced and user-approved annotation; used for alpha preservation, not independent recognition quality"
+    }
+  ],
+  "execution_override": {
+    "date": "2026-11-09",
+    "instruction": "Temporarily retain current recognition and complete remaining development; quality gate remains failing/deferred."
+  }
+}

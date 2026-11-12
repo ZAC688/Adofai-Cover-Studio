@@ -1,0 +1,107 @@
+{
+  "upstreamRevision": "5bb28733cec313b63fbd415b574b5ae35c8aa8b8",
+  "fonts": [
+    {
+      "id": "noto-sans-sc",
+      "label": "思源风格黑体 · Noto Sans SC",
+      "file": "noto-sans-sc.ttf",
+      "source": "https://raw.githubusercontent.com/google/fonts/5bb28733cec313b63fbd415b574b5ae35c8aa8b8/ofl/notosanssc/NotoSansSC%5Bwght%5D.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "a3041811a78c361b1de50f953c805e0244951c21c5bd412f7232ef0d899af0da",
+      "bytes": 17772300
+    },
+    {
+      "id": "noto-serif-sc",
+      "label": "宋体 · Noto Serif SC",
+      "file": "noto-serif-sc.ttf",
+      "source": "https://raw.githubusercontent.com/google/fonts/5bb28733cec313b63fbd415b574b5ae35c8aa8b8/ofl/notoserifsc/NotoSerifSC%5Bwght%5D.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "050080d9255a86808f2945bffac582b31ef32bc36411ce29563b4961670c66f9",
+      "bytes": 25125512
+    },
+    {
+      "id": "inter",
+      "label": "Inter · 英文无衬线",
+      "file": "inter.ttf",
+      "source": "https://raw.githubusercontent.com/google/fonts/5bb28733cec313b63fbd415b574b5ae35c8aa8b8/ofl/inter/Inter%5Bopsz%2Cwght%5D.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "29160a80ff49ddcab2c97711247e08b1fab27a484a329ce8b813d820dc559031",
+      "bytes": 876576
+    },
+    {
+      "id": "noto-serif",
+      "label": "Noto Serif · 英文衬线",
+      "file": "noto-serif.ttf",
+      "source": "https://raw.githubusercontent.com/google/fonts/5bb28733cec313b63fbd415b574b5ae35c8aa8b8/ofl/notoserif/NotoSerif%5Bwdth%2Cwght%5D.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "4d8e6761424656867019081a1a01336f3cb086982682698714054fc33f782713",
+      "bytes": 1887192
+    },
+    {
+      "id": "bebas-neue",
+      "label": "Bebas Neue · 常规",
+      "file": "bebas-neue.ttf",
+      "source": "User-supplied archive / Bebas_Neue/BebasNeue-Regular.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "830ea186acffc2316ed1a4e42319246ba3b46b04e33a211079249bf901193f04",
+      "bytes": 57676,
+      "weight": 400,
+      "style": "normal"
+    },
+    {
+      "id": "russo-one",
+      "label": "Russo One · 常规",
+      "file": "russo-one.ttf",
+      "source": "User-supplied archive / Russo_One/RussoOne-Regular.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "ba5a79c9a716c4c6cbf88539bbbcd6a60412d4e4b7b9362a252b575e80e6d87a",
+      "bytes": 37480,
+      "weight": 400,
+      "style": "normal"
+    },
+    {
+      "id": "space-mono",
+      "label": "Space Mono · 常规",
+      "file": "space-mono.ttf",
+      "source": "User-supplied archive / Space_Mono/SpaceMono-Regular.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "508a2a382b46a55be24d9edb70ce7d59be695cd5808e641fda24c40864b0d5d2",
+      "bytes": 98320,
+      "weight": 400,
+      "style": "normal"
+    },
+    {
+      "id": "space-mono-italic",
+      "label": "Space Mono · 斜体",
+      "file": "space-mono-italic.ttf",
+      "source": "User-supplied archive / Space_Mono/SpaceMono-Italic.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "15f752f8031f2517d240ea5f54d07ed1a0040d051072245d733f029a4de6c320",
+      "bytes": 112912,
+      "weight": 400,
+      "style": "italic"
+    },
+    {
+      "id": "space-mono-bold",
+      "label": "Space Mono · 粗体",
+      "file": "space-mono-bold.ttf",
+      "source": "User-supplied archive / Space_Mono/SpaceMono-Bold.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "35da133403a96d2972f91744f4e8dd3f3d0155e6b9aedbaf14266efa58c12d2d",
+      "bytes": 97256,
+      "weight": 700,
+      "style": "normal"
+    },
+    {
+      "id": "space-mono-bold-italic",
+      "label": "Space Mono · 粗斜体",
+      "file": "space-mono-bold-italic.ttf",
+      "source": "User-supplied archive / Space_Mono/SpaceMono-BoldItalic.ttf",
+      "license": "SIL Open Font License 1.1",
+      "sha256": "b7fb2fb5a8d7b0ddd6b9d89d6ff5980da87dc36e0178b95551bd337dac554f0d",
+      "bytes": 103288,
+      "weight": 700,
+      "style": "italic"
+    }
+  ]
+}

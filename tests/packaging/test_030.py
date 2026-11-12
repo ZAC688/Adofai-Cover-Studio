@@ -1,0 +1,16 @@
+from tests.e2e.test_collapsible_effects import test_collapsing_parameters_keeps_effect_pixels_settings_and_switches as collapse
+from tests.e2e.test_gradient_lights import test_all_six_lights_follow_gradient_colors_direction_with_fill_disabled as gradients
+from tests.e2e.test_shadows import test_shadow_follows_body_has_soft_edges_can_be_disabled_and_exports as shadows
+from tests.e2e.test_stickers import test_categories_selected_gif_frame_transform_shadow_order_and_export_restore as stickers
+from tests.e2e.test_fusion import (
+    test_legacy_all_blend_modes_and_gradient_apply_undo_refresh_and_png_match_preview as fusion_modes,
+    test_failed_mask_save_keeps_preview_draft_until_retry as fusion_retry,
+)
+
+
+def test_frozen_collapsible_controls_preserve_effects(edge_page,running_app,tmp_path):collapse(edge_page,running_app,tmp_path,'text')
+def test_frozen_lights_follow_gradient_without_fill(edge_page):gradients(edge_page)
+def test_frozen_track_shadows_persist_and_export(edge_page,running_app,tmp_path):shadows(edge_page,running_app,tmp_path,'track')
+def test_frozen_classified_stickers_and_gif_frames_work_offline(edge_page,running_app,tmp_path):stickers(edge_page,running_app,tmp_path)
+def test_frozen_fusion_modes_mask_and_export_match_preview(edge_page,running_app,tmp_path):fusion_modes(edge_page,running_app,tmp_path)
+def test_frozen_fusion_draft_survives_write_failure(edge_page,running_app,tmp_path):fusion_retry(edge_page,running_app,tmp_path)

@@ -1,0 +1,1777 @@
+{
+  "upstream": "pixijs/filters",
+  "version": "6.1.5",
+  "pixiVersion": "8.22.0",
+  "filters": [
+    {
+      "type": "AdjustmentFilter",
+      "label": "颜色调整",
+      "fields": [
+        {
+          "key": "gamma",
+          "type": "number",
+          "value": 1,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "contrast",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "saturation",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "brightness",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "red",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "green",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "blue",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "AdvancedBloomFilter",
+      "label": "高级泛光",
+      "fields": [
+        {
+          "key": "threshold",
+          "type": "number",
+          "value": 0.5,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "bloomScale",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "brightness",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "blur",
+          "type": "number",
+          "value": 8,
+          "min": 0.01,
+          "max": 120,
+          "step": 0.01
+        },
+        {
+          "key": "quality",
+          "type": "number",
+          "value": 4,
+          "min": 1,
+          "max": 10,
+          "step": 1
+        },
+        {
+          "key": "pixelSize",
+          "type": "point",
+          "value": {
+            "x": 1,
+            "y": 1
+          },
+          "min": 0.1,
+          "max": 10,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "AsciiFilter",
+      "label": "字符画",
+      "fields": [
+        {
+          "key": "size",
+          "type": "number",
+          "value": 8,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "color",
+          "type": "color",
+          "value": "#ffffff",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "replaceColor",
+          "type": "color",
+          "value": "#000000",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "BackdropBlurFilter",
+      "label": "背景模糊",
+      "fields": [
+        {
+          "key": "strength",
+          "type": "number",
+          "value": 8,
+          "min": 0.01,
+          "max": 120,
+          "step": 0.01
+        },
+        {
+          "key": "quality",
+          "type": "number",
+          "value": 4,
+          "min": 1,
+          "max": 10,
+          "step": 1
+        },
+        {
+          "key": "kernelSize",
+          "type": "number",
+          "value": 5,
+          "min": 5,
+          "max": 15,
+          "step": 2
+        },
+        {
+          "key": "frontAlpha",
+          "type": "number",
+          "value": 0.15,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "BevelFilter",
+      "label": "斜面",
+      "fields": [
+        {
+          "key": "rotation",
+          "type": "number",
+          "value": 45,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "thickness",
+          "type": "number",
+          "value": 2,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "lightColor",
+          "type": "color",
+          "value": "#ffffff",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "lightAlpha",
+          "type": "number",
+          "value": 0.7,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "shadowColor",
+          "type": "color",
+          "value": "#000000",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "shadowAlpha",
+          "type": "number",
+          "value": 0.7,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "BloomFilter",
+      "label": "泛光",
+      "fields": [
+        {
+          "key": "strength",
+          "type": "point",
+          "value": {
+            "x": 2,
+            "y": 2
+          },
+          "min": 0.01,
+          "max": 120,
+          "step": 0.01
+        },
+        {
+          "key": "quality",
+          "type": "number",
+          "value": 4,
+          "min": 1,
+          "max": 10,
+          "step": 1
+        },
+        {
+          "key": "resolution",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "kernelSize",
+          "type": "number",
+          "value": 5,
+          "min": 5,
+          "max": 15,
+          "step": 2
+        }
+      ]
+    },
+    {
+      "type": "BulgePinchFilter",
+      "label": "膨胀收缩",
+      "fields": [
+        {
+          "key": "center",
+          "type": "point",
+          "value": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "radius",
+          "type": "number",
+          "value": 100,
+          "min": -1,
+          "max": 4000,
+          "step": 0.01
+        },
+        {
+          "key": "strength",
+          "type": "number",
+          "value": 1,
+          "min": -1,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "CRTFilter",
+      "label": "CRT 显示器",
+      "fields": [
+        {
+          "key": "curvature",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "lineWidth",
+          "type": "number",
+          "value": 1,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "lineContrast",
+          "type": "number",
+          "value": 0.25,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "verticalLine",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "noise",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "noiseSize",
+          "type": "number",
+          "value": 1,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "vignetting",
+          "type": "number",
+          "value": 0.3,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "vignettingAlpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "vignettingBlur",
+          "type": "number",
+          "value": 0.3,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "time",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "seed",
+          "type": "number",
+          "value": 0,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "ColorGradientFilter",
+      "label": "颜色渐变",
+      "fields": [
+        {
+          "key": "type",
+          "type": "enum",
+          "value": 0,
+          "min": 0,
+          "max": 2,
+          "step": 1,
+          "options": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "key": "stops",
+          "type": "array",
+          "value": [
+            {
+              "offset": 0,
+              "color": 16711680,
+              "alpha": 1
+            },
+            {
+              "offset": 1,
+              "color": 255,
+              "alpha": 1
+            }
+          ],
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "angle",
+          "type": "number",
+          "value": 90,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "maxColors",
+          "type": "number",
+          "value": 0,
+          "min": 0,
+          "max": 512,
+          "step": 1
+        },
+        {
+          "key": "replace",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "ColorMapFilter",
+      "label": "色彩查找表",
+      "fields": [
+        {
+          "key": "colorMap",
+          "type": "texture",
+          "value": null,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "nearest",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "mix",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "ColorOverlayFilter",
+      "label": "颜色覆盖",
+      "fields": [
+        {
+          "key": "color",
+          "type": "color",
+          "value": "#000000",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "ColorReplaceFilter",
+      "label": "颜色替换",
+      "fields": [
+        {
+          "key": "originalColor",
+          "type": "color",
+          "value": "#ff0000",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "targetColor",
+          "type": "color",
+          "value": "#000000",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "tolerance",
+          "type": "number",
+          "value": 0.4,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "ConvolutionFilter",
+      "label": "卷积",
+      "fields": [
+        {
+          "key": "matrix",
+          "type": "array",
+          "value": [
+            0,
+            -1,
+            0,
+            -1,
+            5,
+            -1,
+            0,
+            -1,
+            0
+          ],
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "width",
+          "type": "number",
+          "value": 200,
+          "min": 0.01,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "height",
+          "type": "number",
+          "value": 200,
+          "min": 0.01,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "CrossHatchFilter",
+      "label": "交叉排线",
+      "fields": []
+    },
+    {
+      "type": "DotFilter",
+      "label": "网点",
+      "fields": [
+        {
+          "key": "scale",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "angle",
+          "type": "number",
+          "value": 5,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "grayscale",
+          "type": "boolean",
+          "value": true,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "DropShadowFilter",
+      "label": "投影",
+      "fields": [
+        {
+          "key": "offset",
+          "type": "point",
+          "value": {
+            "x": 4,
+            "y": 4
+          },
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "color",
+          "type": "color",
+          "value": "#000000",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 0.5,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "shadowOnly",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "kernels",
+          "type": "array",
+          "value": [],
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "blur",
+          "type": "number",
+          "value": 2,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "quality",
+          "type": "number",
+          "value": 3,
+          "min": 1,
+          "max": 10,
+          "step": 1
+        },
+        {
+          "key": "pixelSize",
+          "type": "point",
+          "value": {
+            "x": 1,
+            "y": 1
+          },
+          "min": 0.1,
+          "max": 10,
+          "step": 0.01
+        },
+        {
+          "key": "resolution",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "EmbossFilter",
+      "label": "浮雕",
+      "fields": [
+        {
+          "key": "strength",
+          "type": "number",
+          "value": 5,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "GlitchFilter",
+      "label": "故障",
+      "fields": [
+        {
+          "key": "slices",
+          "type": "number",
+          "value": 5,
+          "min": 1,
+          "max": 512,
+          "step": 1
+        },
+        {
+          "key": "offset",
+          "type": "number",
+          "value": 100,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "direction",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "fillMode",
+          "type": "enum",
+          "value": 0,
+          "min": 0,
+          "max": 4,
+          "step": 1,
+          "options": [
+            0,
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        {
+          "key": "average",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "seed",
+          "type": "number",
+          "value": 0,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "red",
+          "type": "point",
+          "value": {
+            "x": 0,
+            "y": 0
+          },
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "green",
+          "type": "point",
+          "value": {
+            "x": 0,
+            "y": 0
+          },
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "blue",
+          "type": "point",
+          "value": {
+            "x": 0,
+            "y": 0
+          },
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "minSize",
+          "type": "number",
+          "value": 8,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "sampleSize",
+          "type": "number",
+          "value": 512,
+          "min": 1,
+          "max": 512,
+          "step": 1
+        }
+      ]
+    },
+    {
+      "type": "GlowFilter",
+      "label": "辉光",
+      "fields": [
+        {
+          "key": "distance",
+          "type": "number",
+          "value": 10,
+          "min": 0.01,
+          "max": 180,
+          "step": 0.01
+        },
+        {
+          "key": "outerStrength",
+          "type": "number",
+          "value": 4,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "innerStrength",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "color",
+          "type": "color",
+          "value": "#ffffff",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "quality",
+          "type": "number",
+          "value": 0.1,
+          "min": 0.01,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "knockout",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "GodrayFilter",
+      "label": "光束",
+      "fields": [
+        {
+          "key": "angle",
+          "type": "number",
+          "value": 30,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "gain",
+          "type": "number",
+          "value": 0.5,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "lacunarity",
+          "type": "number",
+          "value": 2.5,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "parallel",
+          "type": "boolean",
+          "value": true,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "time",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "center",
+          "type": "point",
+          "value": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "GrayscaleFilter",
+      "label": "灰度",
+      "fields": []
+    },
+    {
+      "type": "HslAdjustmentFilter",
+      "label": "色相饱和度",
+      "fields": [
+        {
+          "key": "hue",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "saturation",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "lightness",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "colorize",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "KawaseBlurFilter",
+      "label": "Kawase 模糊",
+      "fields": [
+        {
+          "key": "strength",
+          "type": "number",
+          "value": 4,
+          "min": 0.01,
+          "max": 120,
+          "step": 0.01
+        },
+        {
+          "key": "quality",
+          "type": "number",
+          "value": 3,
+          "min": 1,
+          "max": 10,
+          "step": 1
+        },
+        {
+          "key": "clamp",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "pixelSize",
+          "type": "point",
+          "value": {
+            "x": 1,
+            "y": 1
+          },
+          "min": 0.1,
+          "max": 10,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "MotionBlurFilter",
+      "label": "运动模糊",
+      "fields": [
+        {
+          "key": "velocity",
+          "type": "point",
+          "value": {
+            "x": 12,
+            "y": 0
+          },
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "kernelSize",
+          "type": "number",
+          "value": 5,
+          "min": 5,
+          "max": 25,
+          "step": 2
+        },
+        {
+          "key": "offset",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "MultiColorReplaceFilter",
+      "label": "多色替换",
+      "fields": [
+        {
+          "key": "replacements",
+          "type": "array",
+          "value": [
+            [
+              16711680,
+              255
+            ]
+          ],
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "tolerance",
+          "type": "number",
+          "value": 0.05,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "maxColors",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 512,
+          "step": 1
+        }
+      ]
+    },
+    {
+      "type": "OldFilmFilter",
+      "label": "旧胶片",
+      "fields": [
+        {
+          "key": "sepia",
+          "type": "number",
+          "value": 0.3,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "noise",
+          "type": "number",
+          "value": 0.3,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "noiseSize",
+          "type": "number",
+          "value": 1,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "scratch",
+          "type": "number",
+          "value": 0.5,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "scratchDensity",
+          "type": "number",
+          "value": 0.3,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "scratchWidth",
+          "type": "number",
+          "value": 1,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "vignetting",
+          "type": "number",
+          "value": 0.3,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "vignettingAlpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "vignettingBlur",
+          "type": "number",
+          "value": 0.3,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "seed",
+          "type": "number",
+          "value": 0,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "OutlineFilter",
+      "label": "描边",
+      "fields": [
+        {
+          "key": "thickness",
+          "type": "number",
+          "value": 1,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "color",
+          "type": "color",
+          "value": "#000000",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "quality",
+          "type": "number",
+          "value": 0.1,
+          "min": 0.01,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "knockout",
+          "type": "boolean",
+          "value": false,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "PixelateFilter",
+      "label": "像素化",
+      "fields": [
+        {
+          "key": "size",
+          "type": "point",
+          "value": {
+            "x": 10,
+            "y": 10
+          },
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "RGBSplitFilter",
+      "label": "RGB 分离",
+      "fields": [
+        {
+          "key": "red",
+          "type": "point",
+          "value": {
+            "x": -10,
+            "y": 0
+          },
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "green",
+          "type": "point",
+          "value": {
+            "x": 0,
+            "y": 10
+          },
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "blue",
+          "type": "point",
+          "value": {
+            "x": 0,
+            "y": 0
+          },
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "RadialBlurFilter",
+      "label": "径向模糊",
+      "fields": [
+        {
+          "key": "angle",
+          "type": "number",
+          "value": 15,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "center",
+          "type": "point",
+          "value": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "kernelSize",
+          "type": "number",
+          "value": 5,
+          "min": 5,
+          "max": 25,
+          "step": 2
+        },
+        {
+          "key": "radius",
+          "type": "number",
+          "value": -1,
+          "min": -1,
+          "max": 4000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "ReflectionFilter",
+      "label": "倒影",
+      "fields": [
+        {
+          "key": "mirror",
+          "type": "boolean",
+          "value": true,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "boundary",
+          "type": "number",
+          "value": 0.5,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "amplitude",
+          "type": "array",
+          "value": [
+            0,
+            20
+          ],
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "waveLength",
+          "type": "array",
+          "value": [
+            30,
+            100
+          ],
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "array",
+          "value": [
+            1,
+            1
+          ],
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "time",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "ShockwaveFilter",
+      "label": "冲击波",
+      "fields": [
+        {
+          "key": "center",
+          "type": "point",
+          "value": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "speed",
+          "type": "number",
+          "value": 500,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "amplitude",
+          "type": "number",
+          "value": 30,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "wavelength",
+          "type": "number",
+          "value": 160,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "brightness",
+          "type": "number",
+          "value": 1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "radius",
+          "type": "number",
+          "value": -1,
+          "min": -1,
+          "max": 4000,
+          "step": 0.01
+        },
+        {
+          "key": "time",
+          "type": "number",
+          "value": 0.7,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "SimpleLightmapFilter",
+      "label": "光照贴图",
+      "fields": [
+        {
+          "key": "lightMap",
+          "type": "texture",
+          "value": null,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "color",
+          "type": "color",
+          "value": "#000000",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "alpha",
+          "type": "number",
+          "value": 1,
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "SimplexNoiseFilter",
+      "label": "单纯形噪声",
+      "fields": [
+        {
+          "key": "strength",
+          "type": "number",
+          "value": 0.5,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "noiseScale",
+          "type": "number",
+          "value": 10,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "offsetX",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "offsetY",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "offsetZ",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "step",
+          "type": "number",
+          "value": -1,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "TiltShiftAxisFilter",
+      "label": "单轴移轴",
+      "fields": [
+        {
+          "key": "blur",
+          "type": "number",
+          "value": 100,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "gradientBlur",
+          "type": "number",
+          "value": 600,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "axis",
+          "type": "select",
+          "value": "horizontal",
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01,
+          "options": [
+            "horizontal",
+            "vertical"
+          ]
+        },
+        {
+          "key": "start",
+          "type": "point",
+          "value": {
+            "x": 0,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "end",
+          "type": "point",
+          "value": {
+            "x": 1,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "TiltShiftFilter",
+      "label": "移轴",
+      "fields": [
+        {
+          "key": "blur",
+          "type": "number",
+          "value": 100,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "gradientBlur",
+          "type": "number",
+          "value": 600,
+          "min": 0.01,
+          "max": 1000,
+          "step": 0.01
+        },
+        {
+          "key": "start",
+          "type": "point",
+          "value": {
+            "x": 0,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "end",
+          "type": "point",
+          "value": {
+            "x": 1,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "TwistFilter",
+      "label": "扭曲",
+      "fields": [
+        {
+          "key": "padding",
+          "type": "number",
+          "value": 20,
+          "min": -10000,
+          "max": 180,
+          "step": 0.01
+        },
+        {
+          "key": "radius",
+          "type": "number",
+          "value": 200,
+          "min": -1,
+          "max": 4000,
+          "step": 0.01
+        },
+        {
+          "key": "angle",
+          "type": "number",
+          "value": 4,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "offset",
+          "type": "point",
+          "value": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        }
+      ]
+    },
+    {
+      "type": "ZoomBlurFilter",
+      "label": "缩放模糊",
+      "fields": [
+        {
+          "key": "strength",
+          "type": "number",
+          "value": 0.1,
+          "min": 0.01,
+          "max": 120,
+          "step": 0.01
+        },
+        {
+          "key": "center",
+          "type": "point",
+          "value": {
+            "x": 0.5,
+            "y": 0.5
+          },
+          "min": 0,
+          "max": 1,
+          "step": 0.01
+        },
+        {
+          "key": "innerRadius",
+          "type": "number",
+          "value": 0,
+          "min": -10000,
+          "max": 10000,
+          "step": 0.01
+        },
+        {
+          "key": "radius",
+          "type": "number",
+          "value": -1,
+          "min": -1,
+          "max": 4000,
+          "step": 0.01
+        },
+        {
+          "key": "maxKernelSize",
+          "type": "number",
+          "value": 32,
+          "min": 1,
+          "max": 64,
+          "step": 1
+        }
+      ]
+    }
+  ]
+}

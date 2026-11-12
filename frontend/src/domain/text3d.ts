@@ -1,0 +1,2 @@
+export type Text3D={enabled:boolean;depth:number;bevel:number;rotationX:number;rotationY:number;rotationZ:number;perspective:number;sideColor:string;lightDirection:number;lightElevation:number;lightIntensity:number;ambientIntensity:number};
+export const defaultText3D=():Text3D=>({enabled:false,depth:18,bevel:1,rotationX:12,rotationY:-18,rotationZ:0,perspective:30,sideColor:'#657080',lightDirection:-35,lightElevation:45,lightIntensity:2,ambientIntensity:.7});

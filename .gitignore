@@ -1,0 +1,41 @@
+.venv/
+__pycache__/
+.pytest_cache/
+build/
+dist/
+artifacts/
+*.spec
+test-assets/private/
+frontend/node_modules/
+frontend/dist/
+tools/npm/
+tools/npm.tgz
+tools/npm-cache/
+.testdata/
+tools/pyinstaller-cache/
+tools/desktop-wheels/
+packaging/dependency-notices/
+release/
+frontend/*.tsbuildinfo
+
+# Original user screenshots / visual references remain local.
+/testscreenshots/
+/Thumbnail/
+/Screenshot *.png
+/屏幕截图 *.png
+/test-assets/reference/
+
+# Unused large model experiment (the active u2netp model is versioned).
+/models/u2net.onnx
+
+# Office lock files and machine-local environment settings.
+~$*
+.env
+.env.local
+
+# Local source downloads, chart/music fixtures, and private working documents.
+# Runtime preset fonts in frontend/public/fonts remain versioned.
+/fonts/
+/generate_test/
+/discription.docx
+/video.docx

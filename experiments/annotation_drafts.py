@@ -1,0 +1,133 @@
+"""Independent manually traced polygons for human review, never model outputs.
+
+Coordinates were read against original screenshots. Drafts are not approved
+ground truth and must not be used to declare the recognition gate passed.
+"""
+from pathlib import Path
+import json
+
+from PIL import Image, ImageDraw, ImageOps
+
+ROOT = Path(__file__).resolve().parents[1]
+
+# Original-image coordinates. None are copied from structural_mask or saliency_mask.
+DRAFTS = {
+    "sample-03": {
+        "polygons": [
+            [(184, 0), (319, 0), (345, 24), (350, 44), (305, 121),
+             (310, 143), (324, 157), (333, 161), (363, 150), (380, 153),
+             (390, 163), (383, 187), (375, 207), (408, 215), (424, 224),
+             (427, 235), (413, 248), (385, 265), (411, 286), (428, 301),
+             (427, 312), (414, 319), (386, 319), (361, 306), (322, 309),
+             (303, 344), (284, 355), (258, 356), (246, 347), (248, 335),
+             (272, 319), (314, 290), (318, 278), (305, 262), (307, 245),
+             (317, 230), (244, 231), (220, 227), (209, 219), (208, 207),
+             (220, 190), (209, 190), (201, 184), (202, 173), (224, 154),
+             (250, 143), (263, 123), (285, 88), (294, 75), (162, 75),
+             (140, 71), (126, 65), (122, 52), (133, 39), (161, 21)],
+            [(320, 0), (374, 0), (378, 9), (367, 34), (354, 55), (323, 38)],
+        ],
+        "exclude_ellipses": [(293, 282, 389, 380)],
+        "notes": "City lights; exclude bridge, beams, text and visible ball. Bright occlusion around lower tiles needs review.",
+    },
+    "sample-08": {
+        "polygons": [
+            [(1038, 234), (1261, 234), (1283, 238), (1297, 250), (1302, 265),
+             (1297, 279), (1270, 286), (1193, 307), (1022, 314), (1022, 371),
+             (1036, 377), (1040, 393), (1023, 410), (1022, 510), (878, 510),
+             (878, 445), (689, 445), (689, 468), (756, 487), (773, 497),
+             (779, 513), (773, 526), (757, 534), (692, 535), (692, 543),
+             (939, 543), (939, 750), (691, 750), (691, 774), (753, 791),
+             (772, 800), (778, 814), (773, 828), (755, 837), (692, 838),
+             (692, 850), (939, 850), (939, 1058), (601, 1058), (601, 1090),
+             (671, 1090), (671, 1233), (603, 1233), (603, 1268), (671, 1268),
+             (671, 1354), (620, 1354), (620, 1321), (532, 1321), (532, 1253),
+             (529, 1253), (529, 1180), (530, 1142), (530, 1004), (881, 1004),
+             (881, 991), (806, 991), (789, 984), (781, 972), (779, 956),
+             (787, 944), (808, 937), (880, 915), (881, 905), (622, 905),
+             (617, 899), (617, 699), (881, 699), (881, 685), (805, 685),
+             (789, 679), (780, 665), (783, 650), (793, 641), (813, 634),
+             (882, 614), (881, 599), (621, 599), (617, 594), (617, 393),
+             (877, 393), (877, 366), (965, 366), (965, 334), (902, 334),
+             (860, 323), (800, 309), (784, 298), (776, 283), (778, 272),
+             (790, 260), (803, 256), (1040, 256)],
+            [(1095, 149), (1193, 177), (1207, 187), (1211, 200),
+             (1206, 214), (1190, 222), (1095, 226)],
+        ],
+        "exclude_ellipses": [(1023, 84, 1133, 258)],
+        "notes": "Photo background; keep track interior and icons, remove sky, gate and visible ball. Manual outline draft.",
+    },
+    "sample-09": {
+        "rectangles": [
+            (854, 2, 938, 32), (854, 2, 883, 85), (854, 58, 939, 87),
+            (909, 59, 939, 140), (854, 113, 939, 142), (854, 114, 883, 196),
+            (854, 168, 939, 197), (909, 169, 939, 251), (854, 223, 939, 253),
+            (854, 224, 883, 306), (854, 278, 939, 306),
+            (884, 306, 1332, 336), (1302, 307, 1332, 389),
+            (861, 361, 1332, 391), (861, 362, 891, 444),
+            (861, 416, 1112, 446), (1082, 417, 1112, 500),
+            (861, 471, 1112, 501), (861, 472, 891, 555),
+            (861, 526, 1002, 556), (972, 527, 1002, 610),
+            (861, 581, 1002, 611), (861, 582, 891, 665),
+            (861, 636, 1002, 666), (972, 637, 1002, 720),
+            (751, 691, 1002, 721), (751, 692, 781, 775),
+            (751, 746, 1002, 776), (972, 747, 1002, 830),
+            (861, 801, 1002, 831), (861, 802, 891, 884),
+            (884, 857, 1112, 887), (1082, 858, 1112, 940),
+            (799, 912, 1112, 942), (799, 885, 829, 969),
+            (799, 940, 939, 970), (909, 941, 939, 1024),
+            (799, 995, 939, 1025), (799, 996, 829, 1080), (799, 1050, 842, 1080),
+        ],
+        "polygons": [
+            [(865, 307), (885, 306), (939, 335), (939, 360), (915, 360),
+             (860, 332), (854, 322), (855, 315)],
+            [(865, 846), (884, 852), (942, 885), (946, 900), (941, 911),
+             (923, 916), (867, 887), (859, 875), (859, 859)],
+        ],
+        "exclude_ellipses": [(788, 985, 842, 1041), (789, 1037, 847, 1090)],
+        "notes": "Gold checkerboard theme; no model-derived contours. Tile rectangles and sloped ends manually traced.",
+    },
+}
+
+
+def make_drafts() -> None:
+    output = ROOT / "test-assets/annotation-drafts"
+    reviews = ROOT / "artifacts/p0/annotation-review"
+    output.mkdir(parents=True, exist_ok=True)
+    reviews.mkdir(parents=True, exist_ok=True)
+    for sample_id, shapes in DRAFTS.items():
+        with Image.open(ROOT / f"test-assets/reference/{sample_id}.png") as source:
+            original = source.convert("RGBA")
+        mask = Image.new("L", original.size, 0)
+        draw = ImageDraw.Draw(mask)
+        for rectangle in shapes.get("rectangles", []):
+            draw.rectangle(rectangle, fill=255)
+        for polygon in shapes.get("polygons", []):
+            draw.polygon(polygon, fill=255)
+        for ellipse in shapes.get("exclude_ellipses", []):
+            draw.ellipse(ellipse, fill=0)
+        mask.save(output / f"{sample_id}-draft.png")
+        selected = Image.new("RGBA", original.size, (50, 230, 110, 0))
+        selected.putalpha(mask.point(lambda a: round(a * .42)))
+        overlay = Image.alpha_composite(original, selected)
+        cut = original.copy()
+        cut.putalpha(mask)
+        checker = Image.new("RGBA", original.size, "#535d69")
+        checker.alpha_composite(cut)
+        width = 660
+        height = max(1, round(original.height * width / original.width))
+        sheet = Image.new("RGB", (width * 3, height + 34), "#252c35")
+        labels = ["ORIGINAL", "MANUAL DRAFT - GREEN = KEEP", "DRAFT CUTOUT - NOT APPROVED"]
+        sd = ImageDraw.Draw(sheet)
+        for i, img in enumerate([original, overlay, checker]):
+            sheet.paste(img.convert("RGB").resize((width, height)), (i * width, 34))
+            sd.text((i * width + 8, 9), labels[i], fill="white")
+        sheet.save(reviews / f"{sample_id}-review.png")
+    (output / "vector-drafts.json").write_text(json.dumps({
+        "status": "DRAFT_NOT_APPROVED", "source": "manual geometric tracing, not model output",
+        "samples": DRAFTS,
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+if __name__ == "__main__":
+    make_drafts()
