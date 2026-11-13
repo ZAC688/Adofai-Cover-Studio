@@ -28,7 +28,7 @@ def test_frozen_outline_hidden_while_editing(edge_page,running_app,tmp_path):out
 
 def test_frozen_050_contains_worker_three_and_original_license():
     manifest=json.loads((BUNDLE/'release-manifest.json').read_text(encoding='utf-8'))
-    assert manifest['version']=='0.8.0' and manifest['three_version']=='0.187.0'
+    assert manifest['version']=='0.8.1' and manifest['three_version']=='0.187.0'
     for key in ['text3d','per_object_filter_management','collapsible_filters_and_reset','precise_filter_sliders','offscreen_light_effects_worker','outline_during_transform_only']:assert manifest[key] is True
     assets=BUNDLE/'_internal/frontend/dist/assets'
     assert list(assets.glob('effects.worker-*.js')) and list(assets.glob('threeText-*.js'))

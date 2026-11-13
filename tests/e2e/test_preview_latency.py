@@ -19,15 +19,15 @@ def test_heavy_slider_stays_responsive_and_shows_intermediate_previews(edge_page
     slider.dispatch_event('pointerdown')
     profile=slider.evaluate('''async input=>{
       const canvas=document.querySelector('canvas[aria-label="封面画布"]');let writes=0,maxDelay=0;
-      const descriptor=Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype,'width');
-      Object.defineProperty(canvas,'width',{get(){return descriptor.get.call(this)},set(v){writes++;descriptor.set.call(this,v)},configurable:true});
+      const context=canvas.getContext('2d'),draw=context.drawImage;
+      context.drawImage=function(...args){writes++;return draw.apply(this,args);};
       const setter=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set,start=performance.now();
       for(let i=0;i<36;i++){
         setter.call(input,String(20+i*2));input.dispatchEvent(new Event('input',{bubbles:true}));
         const t=performance.now();await new Promise(r=>setTimeout(r,16));maxDelay=Math.max(maxDelay,performance.now()-t-16);
       }
       const result={events:36,elapsedMs:performance.now()-start,maxTimerDelayMs:maxDelay,intermediateFrames:writes};
-      delete canvas.width;return result;
+      delete context.drawImage;return result;
     }''')
     slider.dispatch_event('pointerup')
     final=pixels(page)

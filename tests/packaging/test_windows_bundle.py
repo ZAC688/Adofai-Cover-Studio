@@ -102,7 +102,7 @@ def test_release_contains_licenses_and_no_user_screenshots():
     assert not any('testscreenshots' in name or 'test-assets' in name or 'user-reference' in name for name in names)
     manifest = json.loads((BUNDLE / 'release-manifest.json').read_text(encoding='utf-8'))
     assert manifest['recognition_quality_status'] == 'SOLID_TEST_2_EACH_IOU_GE_90_PASSED'
-    assert manifest['version']=='0.8.0'
+    assert manifest['version']=='0.8.1'
     assert manifest['recognition_acceptance_samples']==9
     assert manifest['pixi_filters']==38 and manifest['offline_font_faces']==10
     assert manifest['default_glow']==0 and manifest['fusion_editor']=='smooth-gradient-mask'

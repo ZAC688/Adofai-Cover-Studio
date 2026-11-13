@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type PointerEvent as ReactPoi
 import { changeRatio, dimensions, fitScale, History, layout, screenPoint, type Asset, type Assets, type Loaded, type ObjectId, type Project, type Ratio,type TrackId,type TitleId,type Track,type GraphicId,type Sticker } from './domain/project';
 import { api, initSession, jsonRequest, upload } from './services/api';
 import { SaveQueue, type SaveStatus } from './services/saveQueue';
-import { drawComposition, objectBounds } from './canvas/render';
+import { compose, presentComposition, objectBounds } from './canvas/render';
 import './styles.css';
 import {EffectsPanel,CollapsibleSettings} from './features/EffectsPanel';
 import {ShadowPanel} from './features/ShadowPanel';
@@ -151,10 +151,12 @@ export default function App() {
   useEffect(() => {
     if (!project || !canvas.current) return;
     renderer.current??=new LatestRenderer(async snapshot=>{
-      const stage=document.createElement('canvas');await drawComposition(stage,snapshot);return stage;
+      // Give controls a paint opportunity before raster work and GPU readback.
+      await new Promise<void>(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
+      return compose(snapshot);
     },(stage,snapshot)=>{
       const target=canvas.current;if(!target||snapshot.activeRatio!==current.current?.activeRatio)return;
-      target.width=stage.width;target.height=stage.height;target.getContext('2d',{willReadFrequently:true})!.drawImage(stage,0,0);refreshSelection(value=>value+1);
+      presentComposition(target,stage);refreshSelection(value=>value+1);
     },busy=>canvas.current?.setAttribute('aria-busy',String(busy)),problem=>setError(String(problem)));
     renderer.current.request(project);
   }, [project]);

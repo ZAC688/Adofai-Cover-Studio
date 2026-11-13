@@ -8,7 +8,7 @@ from tests.e2e.test_reference_style import test_reference_relief_reaches_live_pr
 def test_frozen_080_manual_version_and_capabilities_match_source(edge_page,running_app):
     assert (BUNDLE/'使用说明.md').read_bytes()==(ROOT/'docs/使用说明.md').read_bytes()
     manifest=json.loads((BUNDLE/'release-manifest.json').read_text(encoding='utf-8'))
-    assert manifest['version']=='0.8.0'
+    assert manifest['version']=='0.8.1'
     assert manifest['optional_song_artist_titles'] and manifest['song_artist_default_checked'] is False
     assert manifest['application_icon']=='header-logo'
     assert manifest['application_icon_sizes']==[16,24,32,48,64,128,256]

@@ -6,7 +6,7 @@ from tests.e2e.test_070_manual import test_desktop_version_and_track_instruction
 def test_frozen_manual_is_current_and_matches_embedded_content(edge_page,running_app):
     assert (BUNDLE/'使用说明.md').read_bytes()==(ROOT/'docs/使用说明.md').read_bytes()
     manifest=json.loads((BUNDLE/'release-manifest.json').read_text(encoding='utf-8'))
-    assert manifest['version']=='0.8.0'
+    assert manifest['version']=='0.8.1'
     assert manifest['external_browser_required'] is False
     assert manifest['runtime_download_on_start'] is False
     assert manifest['generated_tracks'] is True and manifest['persistent_chart_recipes'] is True

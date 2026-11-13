@@ -1,6 +1,7 @@
 import { dimensions, layout, type Assets, type ObjectId, type Project,type TrackId } from '../domain/project';
-import {resolveEffects} from '../domain/effects';
+import {resolveEffects,type Effects} from '../domain/effects';
 import {renderEffects} from './effectsClient';
+import {RasterCache} from '../services/rasterCache';
 import {ensureFont,fontCSS} from '../services/fonts';
 import {canvasShape} from './alpha';
 import {drawShadow} from './shadow';
@@ -10,6 +11,13 @@ import {gradientMask} from './gradientMask';
 import {threeBounds,rememberThreeBounds} from './threeBounds';
 
 const images = new Map<string, Promise<HTMLImageElement>>();
+const lightPixels=new RasterCache<Awaited<ReturnType<typeof renderEffects>>>(96*1024*1024,result=>result.canvas.width*result.canvas.height*4);
+const sourceIds=new WeakMap<HTMLCanvasElement,number>();let sourceSequence=0;
+function sourceId(canvas:HTMLCanvasElement){if(!sourceIds.has(canvas))sourceIds.set(canvas,++sourceSequence);return sourceIds.get(canvas)!;}
+function lightLayer(identity:unknown,settings:Effects,prepare:()=>HTMLCanvasElement,cache=true){
+  const create=()=>renderEffects(prepare(),settings);
+  return cache?lightPixels.get(JSON.stringify([identity,settings]),create):create();
+}
 export function assetImage(id: string): Promise<HTMLImageElement> {
   if (!images.has(id)) {
     const promise = new Promise<HTMLImageElement>((resolve, reject) => {
@@ -69,7 +77,8 @@ function glow(ctx: CanvasRenderingContext2D, color: string, strength: number, dr
   draw(); ctx.restore();
 }
 
-export async function drawComposition(canvas: HTMLCanvasElement, project: Project,overrides:{fusionMasks?:Partial<Record<TrackId,HTMLCanvasElement>>;filterMasks?:Record<string,HTMLCanvasElement>}={}) {
+type CompositionOverrides={fusionMasks?:Partial<Record<TrackId,HTMLCanvasElement>>;filterMasks?:Record<string,HTMLCanvasElement>};
+export async function compose(project: Project,overrides:CompositionOverrides={}) {
   const {width, height} = dimensions(project.activeRatio);
   await document.fonts.ready;
   const ids=order(project);
@@ -115,10 +124,12 @@ export async function drawComposition(canvas: HTMLCanvasElement, project: Projec
       drawShadow(ctx,base,p.x-base.width/2,p.y-base.height/2,item.trackShadow);
     }
     if(item.trackEffects&&Object.values(settings).some(effect=>effect.enabled)){
-      const base=document.createElement('canvas');base.width=Math.max(1,Math.ceil(track.width*p.scale));base.height=Math.max(1,Math.ceil(track.height*p.scale));
-      base.getContext('2d',{willReadFrequently:true})!.drawImage(track,0,0,base.width,base.height);
-      const effect=await renderEffects(base,settings);
-      ctx.drawImage(effect.canvas,p.x-base.width/2-effect.padding,p.y-base.height/2-effect.padding);
+      const w=Math.max(1,Math.ceil(track.width*p.scale)),h=Math.max(1,Math.ceil(track.height*p.scale));
+      const effect=await lightLayer(['graphic',sourceId(track),w,h],settings,()=>{
+        const base=document.createElement('canvas');base.width=w;base.height=h;
+        base.getContext('2d',{willReadFrequently:true})!.drawImage(track,0,0,w,h);return base;
+      },!isTrack(id)||!overrides.fusionMasks?.[id]);
+      ctx.drawImage(effect.canvas,p.x-w/2-effect.padding,p.y-h/2-effect.padding);
     }else glow(ctx,item.trackColor||'#ffffff',item.trackEffects?0:item.trackGlow,()=>ctx.drawImage(track,
       p.x-track.width*p.scale/2,p.y-track.height*p.scale/2,track.width*p.scale,track.height*p.scale));
     ctx.restore();
@@ -137,7 +148,7 @@ export async function drawComposition(canvas: HTMLCanvasElement, project: Projec
         drawShadow(ctx,body.canvas,body.x,body.y,title.shadow);
         const settings=resolveEffects(title.effects,title.glow,title.color);
         if(title.effects&&Object.values(settings).some(effect=>effect.enabled)){
-          const effect=await renderEffects(body.canvas,settings);ctx.drawImage(effect.canvas,body.x-effect.padding,body.y-effect.padding);
+          const effect=await lightLayer(['3d',sourceId(body.canvas)],settings,()=>body.canvas);ctx.drawImage(effect.canvas,body.x-effect.padding,body.y-effect.padding);
         }else glow(ctx,title.color,title.effects?0:title.glow,()=>ctx.drawImage(body.canvas,body.x,body.y));
         ctx.restore();
       }
@@ -155,16 +166,28 @@ export async function drawComposition(canvas: HTMLCanvasElement, project: Projec
       drawShadow(ctx,base,p.x-2,p.y-2,title.shadow);
     }
     if(title.effects&&Object.values(settings).some(effect=>effect.enabled)){
-      const base=document.createElement('canvas');base.width=Math.ceil(ctx.measureText(title.text).width)+4;base.height=Math.ceil(p.fontSize*1.5)+4;
-      const body=base.getContext('2d',{willReadFrequently:true})!;body.font=ctx.font;body.textBaseline='top';body.fillStyle=title.color;body.fillText(title.text,2,2);
-      const effect=await renderEffects(base,settings);ctx.drawImage(effect.canvas,p.x-2-effect.padding,p.y-2-effect.padding);
+      const effect=await lightLayer(['text',title.fontId,title.text,title.color,ctx.font,p.fontSize],settings,()=>{
+        const base=document.createElement('canvas');base.width=Math.ceil(ctx.measureText(title.text).width)+4;base.height=Math.ceil(p.fontSize*1.5)+4;
+        const body=base.getContext('2d',{willReadFrequently:true})!;body.font=ctx.font;body.textBaseline='top';body.fillStyle=title.color;body.fillText(title.text,2,2);return base;
+      });ctx.drawImage(effect.canvas,p.x-2-effect.padding,p.y-2-effect.padding);
     }else glow(ctx,title.color,title.effects?0:title.glow,()=>ctx.fillText(title.text,p.x,p.y));
     ctx.restore();
     if(layer)destination.drawImage(await filtered(layer,id),0,0);
   }
   }
-  canvas.width = width; canvas.height = height;
-  canvas.getContext('2d',{willReadFrequently:true})!.drawImage(await filtered(staging,'canvas'), 0, 0);
+  return await filtered(staging,'canvas');
+}
+
+/** Keep the display surface stable; resizing it for every edit reallocates it. */
+export function presentComposition(canvas:HTMLCanvasElement,frame:HTMLCanvasElement){
+  if(canvas.width!==frame.width)canvas.width=frame.width;
+  if(canvas.height!==frame.height)canvas.height=frame.height;
+  const ctx=canvas.getContext('2d',{willReadFrequently:true})!;
+  ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(frame,0,0);
+}
+
+export async function drawComposition(canvas:HTMLCanvasElement,project:Project,overrides:CompositionOverrides={}){
+  presentComposition(canvas,await compose(project,overrides));
 }
 
 export type Bounds = {x: number; y: number; width: number; height: number};

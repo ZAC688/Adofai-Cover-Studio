@@ -36,14 +36,15 @@ def post_close(host):
     assert function(handle,0x0010,0,0)
 
 
-def start_desktop(directory,*,binary=None):
+def start_desktop(directory,*,binary=None,visible=False):
     directory.mkdir(parents=True,exist_ok=True)
     with socket.socket() as sock:sock.bind(('127.0.0.1',0));debug=sock.getsockname()[1]
     data=directory/'本机作品 with spaces';ready=directory/'ready.json';downloads=directory/'downloads'
     ready.unlink(missing_ok=True)
     executable=[str(binary)] if binary else [sys.executable,'-m','backend.launcher']
-    command=executable+['--data-dir',str(data),'--ready-file',str(ready),'--desktop-hidden',
+    command=executable+['--data-dir',str(data),'--ready-file',str(ready),
         '--desktop-debug-port',str(debug),'--download-dir',str(downloads)]
+    if not visible:command.append('--desktop-hidden')
     environment=dict(os.environ);environment['PATH']=r'C:\Windows\System32;C:\Windows'
     log=(directory/'desktop.log').open('wb')
     process=subprocess.Popen(command,cwd=ROOT,env=environment,stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)

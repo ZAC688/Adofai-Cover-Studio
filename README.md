@@ -1,6 +1,6 @@
 # ADOFAI 封面制作器
 
-ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Windows 本地桌面工具。当前版本 **0.8.0**，作者 **ZAC688**。
+ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Windows 本地桌面工具。当前版本 **0.8.1**，作者 **ZAC688**。
 
 ## 项目解决什么问题
 
@@ -30,7 +30,7 @@ ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Wi
 
 目标系统为 **Windows 10（1809 或更高）／Windows 11 x64**。
 
-1. 获取完整的 `ADOFAI-Cover-Studio-0.8.0-windows-x64.zip`。
+1. 获取完整的 `ADOFAI-Cover-Studio-0.8.1-windows-x64.zip`。
 2. 将 ZIP **完整解压**到一个目录。
 3. 双击其中的 `ADOFAI-Cover-Studio.exe`，程序会打开独立桌面窗口。
 
@@ -38,11 +38,11 @@ ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Wi
 
 当前工作区已经生成：
 
-- 分发包：[release/ADOFAI-Cover-Studio-0.8.0-windows-x64.zip](release/ADOFAI-Cover-Studio-0.8.0-windows-x64.zip)。
-- 启动程序：[dist/0.8.0/ADOFAI-Cover-Studio/ADOFAI-Cover-Studio.exe](dist/0.8.0/ADOFAI-Cover-Studio/ADOFAI-Cover-Studio.exe)。
-- 校验文件：[ZIP SHA-256](release/ADOFAI-Cover-Studio-0.8.0-windows-x64.zip.sha256)。
+- 分发包：[release/ADOFAI-Cover-Studio-0.8.1-windows-x64.zip](release/ADOFAI-Cover-Studio-0.8.1-windows-x64.zip)。
+- 启动程序：[dist/0.8.1/ADOFAI-Cover-Studio/ADOFAI-Cover-Studio.exe](dist/0.8.1/ADOFAI-Cover-Studio/ADOFAI-Cover-Studio.exe)。
+- 校验文件：[ZIP SHA-256](release/ADOFAI-Cover-Studio-0.8.1-windows-x64.zip.sha256)。
 
-`dist/`、`release/` 是本机构建产物，不随 Git 源码提交；其他源码检出需要另行取得成品包或按下文自行构建。
+`dist/`、`release/` 是本机构建产物，不随 Git 源码提交；其他源码检出需要另行取得成品包。
 
 升级时先在旧版点击“退出程序”，退出后再打开新包。新包继续使用原本的本机数据目录；0.6.0 及更早版本仅关闭浏览器可能仍保留后台服务。
 
@@ -104,5 +104,6 @@ ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Wi
 - [PRD](PRD.md)：产品范围和验收标准。
 - [开发计划](DEVELOPMENT_PLAN.md)：早期阶段任务及验证方法。
 - [开发与验收报告](docs/DEVELOPMENT_STATUS.md)：各版本实现、测试结果和已知限制。
-- [0.8.0 开发记录](docs/UPGRADE_080_PROGRESS.md)：本版四项功能的测试与提交记录。
+- [0.8.0 开发记录](docs/UPGRADE_080_PROGRESS.md)：四项功能的历史测试与提交记录。
+- [0.8.1 性能热修](docs/HOTFIX_081.md)：预览延迟原因、修复与验证。
 - [实机验收清单](docs/MANUAL_ACCEPTANCE.md)：需要真实 Windows 环境检查的项目。

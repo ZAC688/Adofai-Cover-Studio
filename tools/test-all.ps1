@@ -1,4 +1,7 @@
+param([switch]$VisiblePerformanceTests)
 $ErrorActionPreference = 'Stop'
+$previousVisiblePerformance = $env:ADOFAI_VISIBLE_PERFORMANCE_TESTS
+if ($VisiblePerformanceTests) { $env:ADOFAI_VISIBLE_PERFORMANCE_TESTS = '1' }
 Push-Location (Split-Path -Parent $PSScriptRoot)
 try {
     New-Item -ItemType Directory -Force -Path 'artifacts/final' | Out-Null
@@ -13,5 +16,6 @@ try {
     $checkResults | Format-Table
     if (@($checkResults | Where-Object ExitCode -ne 0).Count -gt 0) { exit 1 }
 } finally {
+    $env:ADOFAI_VISIBLE_PERFORMANCE_TESTS = $previousVisiblePerformance
     Pop-Location
 }

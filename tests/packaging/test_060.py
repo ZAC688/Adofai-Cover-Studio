@@ -56,6 +56,6 @@ def test_frozen_preset_library_and_embedded_images_survive_process_restart(runni
 
 def test_frozen_060_metadata_matches_information_version():
     manifest=json.loads((BUNDLE/'release-manifest.json').read_text(encoding='utf-8'))
-    assert manifest['version']=='0.8.0' and manifest['author']=='ZAC688'
+    assert manifest['version']=='0.8.1' and manifest['author']=='ZAC688'
     for field in ['portable_filter_presets','existing_filters_folded_by_default','delete_object_key','toolbar_uploads','offline_information_dialog']:assert manifest[field] is True
     assert manifest['new_level_sticker_order']=='P-first-natural,crazy-last'

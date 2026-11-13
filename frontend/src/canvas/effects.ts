@@ -5,7 +5,7 @@ function surface(width:number,height:number){
   const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;return canvas;
 }
 function tint(alpha:ArrayLike<number>,width:number,height:number,color:string,gradient?:{effect:Effect;baseWidth:number;baseHeight:number}){
-  const canvas=surface(width,height),ctx=canvas.getContext('2d',{willReadFrequently:true})!,pixels=ctx.createImageData(width,height);
+  const canvas=surface(width,height),ctx=canvas.getContext('2d')!,pixels=ctx.createImageData(width,height);
   const r=parseInt(color.slice(1,3),16),g=parseInt(color.slice(3,5),16),b=parseInt(color.slice(5,7),16);
   const start=gradient?[1,3,5].map(at=>parseInt(gradient.effect.color.slice(at,at+2),16)):[r,g,b];
   const finish=gradient?[1,3,5].map(at=>parseInt(gradient.effect.color2.slice(at,at+2),16)):start;
@@ -24,7 +24,9 @@ export function applyEffects(base:HTMLCanvasElement|OffscreenCanvas,effects:Effe
   const shape=surface(width,height),shapeCtx=shape.getContext('2d',{willReadFrequently:true})!;shapeCtx.drawImage(base,padding,padding);
   const data=shapeCtx.getImageData(0,0,width,height),alpha=new Uint8ClampedArray(width*height);
   for(let i=0;i<alpha.length;i++)alpha[i]=data.data[i*4+3];
-  const output=surface(width,height),ctx=output.getContext('2d',{willReadFrequently:true})!;
+  // This surface only draws. willReadFrequently forces software rasterization,
+  // making large multi-pass blurs seconds slower even inside the worker.
+  const output=surface(width,height),ctx=output.getContext('2d')!;
   const colorMask=(effect:Effect,values:ArrayLike<number>=alpha)=>tint(values,width,height,effect.color,effect.followGradient?{effect:effects.gradient,baseWidth:base.width,baseHeight:base.height}:undefined);
   const paint=(canvas:CanvasImageSource,effect:Effect,opacity=1,blur=0)=>{
     ctx.save();ctx.globalCompositeOperation=effect.blend==='add'?'lighter':'screen';

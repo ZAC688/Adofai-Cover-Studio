@@ -1,4 +1,4 @@
-param([string]$OutputRoot = 'dist/0.8.0', [string]$ArchiveName = 'ADOFAI-Cover-Studio-0.8.0-windows-x64.zip')
+param([string]$OutputRoot = 'dist/0.8.1', [string]$ArchiveName = 'ADOFAI-Cover-Studio-0.8.1-windows-x64.zip')
 $ErrorActionPreference = 'Stop'
 $appRoot = (Resolve-Path (Split-Path -Parent $PSScriptRoot)).Path
 $appOutputRoot = [System.IO.Path]::GetFullPath((Join-Path $appRoot $OutputRoot))

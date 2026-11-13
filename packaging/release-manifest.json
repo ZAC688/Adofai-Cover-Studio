@@ -1,6 +1,10 @@
 {
   "product": "ADOFAI Cover Studio",
-  "version": "0.8.0",
+  "version": "0.8.1",
+  "accelerated_light_surfaces": true,
+  "preview_ui_paint_priority": true,
+  "stable_preview_surface": true,
+  "light_raster_cache_max_bytes": 100663296,
   "author": "ZAC688",
   "portable_filter_presets": true,
   "existing_filters_folded_by_default": true,

@@ -8,7 +8,7 @@ def test_desktop_version_and_track_instructions_are_available_offline(edge_page,
     before=running_app['client'].get('/api/project').json()
     page.get_by_role('button',name='信息',exact=True).click()
     dialog=page.get_by_role('dialog',name='关于封面制作器',exact=True)
-    expect(dialog.get_by_label('应用版本',exact=True)).to_have_text('0.8.0')
+    expect(dialog.get_by_label('应用版本',exact=True)).to_have_text('0.8.1')
     expect(dialog.get_by_text('Windows · 独立桌面 · 完全离线',exact=True)).to_be_visible()
     dialog.get_by_role('tab',name='更新日志',exact=True).click()
     expect(dialog.get_by_role('heading',name='0.7.0',exact=True)).to_be_visible()
