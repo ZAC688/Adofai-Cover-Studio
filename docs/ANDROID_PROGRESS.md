@@ -29,9 +29,19 @@
 - 新增 7 项下载/解压测试与 23 项模型验证测试。原桌面环境运行 66 项通过；隔离兼容依赖环境运行同一组模型与业务用例 59 项通过。这里是 Windows 主机上的依赖兼容验证，不代替实际安卓原生包与 WebView 测试。
 - 报告保存在本机 `artifacts/android/bootstrap/desktop-regression.xml` 和 `compatibility.xml`。APK 运行、手机布局与文件交互尚未完成，不能据此宣告安卓阶段全部通过。
 
+## 阶段 1B / 2A：原生包与离线处理接口
+
+- 已建立 Android WebView + APK 内嵌 Python 原生工程，ARM64 与 x86_64 两架构均编译成功，测试版本 `0.8.1-android.1`。当前 APK 为开发中间产物，尚未完成手机界面与文件导出，不作为最终验收包。
+- Android 使用只监听 `127.0.0.1` 的处理适配器，复用原 Store、谱面渲染、字体轮廓、两类预设、253 份贴纸和识别算法。保留同源与随机会话检查、文件限制和保存冲突；识别用独立工作线程，取消后不得写入晚到结果。
+- 官方 Android ONNX Runtime 用于原候选模型的本机推理，前后处理共用原实现。已增加前后处理一致性测试；JNI 真机执行尚待安卓运行测试。
+- 初轮 HTTP 验证发现空贴图 JSON 参数兼容问题和无效会话请求体未消费导致的连接重置，已修复；保留失败 XML，未降低原断言。修复后，桌面与隔离兼容环境各 33 项 HTTP / 模型用例通过。
+- 全部原后端回归与新增安卓测试共 239 项通过（报告 `artifacts/android/bootstrap/backend-and-android.xml`）；随后新增 APK 签名、离线资源哈希、ELF 架构检查 3 项通过。包内资源 296 份，私人原谱、图片、音乐、数据库和签名密钥未打包。
+- Android SDK、平台 35、Build Tools 35.0.0、模拟器和 API 35 镜像已安装。主机 WHPX 尚未启用，已尝试无界面软件模拟，设备仍为 offline；已向用户请求是否启用 Windows 自带加速平台，等待答复。没有更改 Windows 虚拟化功能或重启电脑。等待期间继续与此无依赖的手机界面工作，原生运行验收保留为未通过。
+
 ## 官方资料
 
 - [Android WebView](https://developer.android.com/develop/ui/views/layout/webapps/webview)
 - [Chaquopy 插件](https://chaquo.com/chaquopy/doc/current/android.html)
 - [Chaquopy 原生包仓库](https://chaquo.com/pypi-13.1/)
 - [Android 命令行工具](https://developer.android.com/studio#command-tools)
+- [Android 模拟器加速](https://developer.android.com/studio/run/emulator-acceleration)

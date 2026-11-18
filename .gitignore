@@ -49,6 +49,7 @@ frontend/*.tsbuildinfo
 /android/local.properties
 /android/**/build/
 /android/app/src/main/assets/runtime/
+/android/app/src/main/res/drawable/app_icon.png
 /android/signing/
 *.jks
 *.keystore

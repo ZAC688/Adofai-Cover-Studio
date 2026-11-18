@@ -23,7 +23,7 @@ else:
             kwargs['regex'] = kwargs.pop('pattern')
         return pydantic.Field(default, **kwargs)
 
-    class JsonValue:
+    class _JsonValue:
         @classmethod
         def __get_validators__(cls):
             yield cls.validate
@@ -39,6 +39,8 @@ else:
             if isinstance(value, dict) and all(isinstance(key, str) for key in value):
                 return {key: cls.validate(item) for key, item in value.items()}
             raise ValueError('JSON value must be finite and contain only JSON types')
+
+    JsonValue = typing.Optional[_JsonValue]
 
     class CompatibilityMeta(ModelMetaclass):
         def __new__(mcls, name, bases, namespace, **kwargs):

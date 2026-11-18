@@ -48,20 +48,23 @@ def validate_model(path: Path) -> None:
 
 
 def saliency_mask(image: Image.Image, model_path: Path) -> Image.Image:
-    import onnxruntime as ort
-
     validate_model(model_path)
-    options = ort.SessionOptions()
-    options.intra_op_num_threads = 2
-    session = ort.InferenceSession(str(model_path), sess_options=options,
-                                   providers=["CPUExecutionProvider"])
     rgb = image.convert("RGB").resize((320, 320), Image.Resampling.LANCZOS)
     values = np.asarray(rgb, dtype=np.float32)
     values = values / max(float(values.max()), 1.0)
     values = (values - np.array([.485, .456, .406], dtype=np.float32)) / np.array(
         [.229, .224, .225], dtype=np.float32)
     tensor = np.ascontiguousarray(values.transpose(2, 0, 1)[None])
-    result = session.run(None, {session.get_inputs()[0].name: tensor})[0][0, 0]
+    if os.environ.get('ADOFAI_ANDROID') == '1':
+        from backend.android_inference import predict
+        result = predict(tensor, model_path)
+    else:
+        import onnxruntime as ort
+        options = ort.SessionOptions()
+        options.intra_op_num_threads = 2
+        session = ort.InferenceSession(str(model_path), sess_options=options,
+                                       providers=["CPUExecutionProvider"])
+        result = session.run(None, {session.get_inputs()[0].name: tensor})[0][0, 0]
     low, high = float(result.min()), float(result.max())
     if high - low < 1e-8:
         result = np.zeros_like(result)

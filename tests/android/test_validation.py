@@ -75,6 +75,15 @@ def test_filter_targets_and_custom_parameter_checks_are_retained():
             FilterSpec.model_validate({**valid, **updates})
 
 
+def test_filter_texture_can_explicitly_be_null():
+    kind, entry = next((kind, entry) for kind, entry in CATALOG.items()
+                       if any(field['type'] == 'texture' for field in entry['fields']))
+    params = {field['key']: deepcopy(field['value']) for field in entry['fields']}
+    value = FilterSpec.model_validate({'id': 'b' * 32, 'type': kind, 'targets': ['track'], 'params': params})
+    texture = next(field['key'] for field in entry['fields'] if field['type'] == 'texture')
+    assert value.model_dump()['params'][texture] is None
+
+
 def test_title_cannot_accept_infinite_glow_or_unknown_properties():
     valid = {'text': '曲名', 'color': '#ffffff', 'glow': 0}
     for updates in ({'glow': float('inf')}, {'unknown': 1}):
