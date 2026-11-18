@@ -5,6 +5,7 @@ import type {FilterSpec} from '../domain/filters';
 import {replaceTargetFilters} from '../domain/filterPresets';
 import {api,jsonRequest} from '../services/api';
 import {exportName} from './exportName';
+import {saveBlob} from '../services/downloads';
 type Preset={id:string;name:string;count:number};
 export function FilterPresets({actions,target,onError}:{actions:EditorActions;target:ObjectId|'canvas';onError:(message:string)=>void}){
   const [items,setItems]=useState<Preset[]>([]),[chosen,setChosen]=useState(''),[name,setName]=useState(''),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
@@ -23,8 +24,8 @@ export function FilterPresets({actions,target,onError}:{actions:EditorActions;ta
       actions.end();actions.change(next=>replaceTargetFilters(next,target,value.filters));if(alive.current)setMessage('已应用预设，可撤销');
     })}>应用滤镜预设</button>
     <button disabled={busy||!selected} onClick={()=>void run(async()=>{
-      const file=await api<unknown>('/filter-presets/'+chosen),url=URL.createObjectURL(new Blob([JSON.stringify(file,null,2)],{type:'application/json'}));
-      const link=document.createElement('a');link.href=url;link.download=exportName(selected!.name).slice(0,-4)+'.adofai-filters.json';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),3000);
+      const file=await api<unknown>('/filter-presets/'+chosen);
+      await saveBlob(new Blob([JSON.stringify(file,null,2)],{type:'application/json'}),exportName(selected!.name).slice(0,-4)+'.adofai-filters.json');
     })}>导出滤镜预设</button><button disabled={busy} onClick={()=>input.current?.click()}>导入滤镜预设</button></div>
     <input ref={input} aria-label="滤镜预设文件" hidden type="file" accept=".json,application/json" disabled={busy} onChange={event=>{const file=event.target.files?.[0];event.target.value='';if(file)void run(async()=>{if(file.size>100_000_000)throw new Error('滤镜预设不能超过 100 MB');const body=new FormData();body.append('file',file);remember(await api<Preset>('/filter-presets/import',{method:'POST',body}));});}}/>
     <p className="asset-meta" role="status">{busy?'正在处理预设…':message}</p>

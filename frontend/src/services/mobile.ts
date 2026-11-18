@@ -2,7 +2,13 @@ import {useEffect,useState} from 'react';
 
 declare global {
   interface Window {
-    AndroidDevice?: {version:()=>string;closeResult:(saved:boolean)=>void};
+    adofaiBackRequest?:()=>Promise<boolean>;
+    AndroidDevice?: {
+      version:()=>string;closeResult:(saved:boolean)=>void;
+      beginDownload:(name:string,mime:string,size:number)=>string;
+      appendDownload:(id:string,offset:number,encoded:string)=>string;
+      finishDownload:(id:string)=>string;cancelDownload:(id:string)=>void;
+    };
   }
 }
 

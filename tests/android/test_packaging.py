@@ -33,7 +33,10 @@ def test_both_target_and_emulator_have_real_python_sqlite_and_onnx(apk):
 
 
 def test_all_bundled_resources_match_manifest_and_exclude_private_material(apk):
-    expected = json.loads(apk.read('assets/runtime/resource-manifest.json'))
+    manifest=apk.read('assets/runtime/resource-manifest.json')
+    expected = json.loads(manifest)
+    info=json.loads(apk.read('assets/runtime/bundle-info.json'))
+    assert info['resourceFingerprint']==hashlib.sha256(manifest).hexdigest()
     with zipfile.ZipFile(io.BytesIO(apk.read('assets/runtime/runtime.zip'))) as resources:
         names = resources.namelist()
         assert resources.testzip() is None

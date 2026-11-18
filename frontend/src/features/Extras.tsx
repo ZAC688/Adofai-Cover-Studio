@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { dimensions } from '../domain/project';
 import { drawComposition } from '../canvas/render';
 import { exportName } from './exportName';
+import {isAndroid,saveBlob} from '../services/downloads';
 
 export { TrackControls } from './Recognition';
 export { MaskEditor } from './MaskEditor';
@@ -25,8 +26,7 @@ export function ExportDialog({project,close,onError}: {project:Project;close:()=
     setBusy(true);setFailure('');
     try{
       const blob = await new Promise<Blob>((resolve,reject)=>canvas.current!.toBlob(value=>value?resolve(value):reject(new Error('图片生成失败，请重试')),'image/png'));
-      const address=URL.createObjectURL(blob);const anchor=document.createElement('a');anchor.href=address;anchor.download=exportName(name);document.body.append(anchor);anchor.click();anchor.remove();
-      setTimeout(()=>URL.revokeObjectURL(address),3000);
+      await saveBlob(blob,exportName(name));
     }catch(error){const message=error instanceof Error?error.message:'导出失败';setFailure(message);onError(message);}finally{setBusy(false);}
   }
   return <div className="modal-backdrop"><section className="modal" role="dialog" aria-modal="true" aria-label="导出图片">
@@ -34,6 +34,6 @@ export function ExportDialog({project,close,onError}: {project:Project;close:()=
     <canvas className="export-preview" aria-label="导出预览" ref={canvas}/>
     <div className="export-details"><span>PNG</span><span>{size.width} × {size.height}</span><input aria-label="导出文件名" value={name} maxLength={120} onChange={e=>setName(e.target.value)}/></div>
     {failure&&<p role="alert">{failure}</p>}
-    <div className="modal-actions"><span className="micro">{ready?'完整分辨率 · 当前构图':'正在准备图片…'}</span><button onClick={close}>返回编辑</button><button className="primary" disabled={!ready||busy} onClick={()=>void download()}>{busy?'正在导出…':'导出到电脑'}</button></div>
+    <div className="modal-actions"><span className="micro">{ready?'完整分辨率 · 当前构图':'正在准备图片…'}</span><button onClick={close}>返回编辑</button><button className="primary" disabled={!ready||busy} onClick={()=>void download()}>{busy?'正在导出…':isAndroid()?'保存到手机':'导出到电脑'}</button></div>
   </section></div>;
 }

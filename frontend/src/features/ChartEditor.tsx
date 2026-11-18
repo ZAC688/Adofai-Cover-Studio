@@ -2,6 +2,7 @@ import {useEffect,useRef,useState} from 'react';
 import {api,jsonRequest} from '../services/api';
 import type {Asset,ChartRecipe} from '../domain/project';
 import type {ChartInfo} from '../domain/chartTitles';
+import {saveURL} from '../services/downloads';
 
 export function ChartEditor({initial,close,apply,availableTitles}:{initial?:ChartRecipe|null;close:()=>void;availableTitles:number;apply:(asset:Asset,recipe:ChartRecipe,texts:string[])=>void}){
   const [source,setSource]=useState(initial?.sourceId||'');
@@ -33,9 +34,10 @@ export function ChartEditor({initial,close,apply,availableTitles}:{initial?:Char
     try{const body=new FormData();body.append('file',file);const item=await api<{id:string}>('/charts',{method:'POST',body});initialRef.current=null;setHtml('');setSource(item.id);}
     catch(error){setFailure(String(error));}finally{setBusy(false);}
   }
-  function downloadTrack(){
-    if(!result)return;const link=document.createElement('a');link.href='/api/assets/'+result.asset.id;
-    link.download=`轨道-${result.recipe.start}-${result.recipe.end}-${result.recipe.resolution}.png`;link.click();
+  async function downloadTrack(){
+    if(!result)return;
+    try{await saveURL('/api/assets/'+result.asset.id,`轨道-${result.recipe.start}-${result.recipe.end}-${result.recipe.resolution}.png`);}
+    catch(error){if(alive.current)setFailure(String(error));}
   }
   return <div className="modal-backdrop"><section className="modal chart-editor" role="dialog" aria-modal="true" aria-label="从谱面生成轨道">
     <div className="modal-header"><h2>从谱面生成轨道</h2><button disabled={busy} onClick={()=>input.current?.click()}>{source?'更换谱面':'导入 .adofai'}</button><button aria-label="关闭谱面生成" disabled={busy} onClick={close}>×</button></div>

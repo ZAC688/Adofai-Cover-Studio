@@ -21,14 +21,18 @@ import androidx.core.view.WindowInsetsCompat;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.OutputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import org.json.JSONObject;
 
 public class MainActivity extends Activity {
     private final ExecutorService startup = Executors.newSingleThreadExecutor();
@@ -37,7 +41,10 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> fileCallback;
     private volatile int runtimePort;
     private boolean closing;
+    private DownloadStore downloads;
+    private volatile String pendingSave;
     private static final int PICK_FILE = 21;
+    private static final int SAVE_FILE = 22;
 
     @Override public void onCreate(Bundle state) {
         super.onCreate(state);
@@ -63,6 +70,15 @@ public class MainActivity extends Activity {
         status.setText("正在准备离线资源与本机作品…\n首次启动可能需要稍等片刻");
         root.addView(status, new FrameLayout.LayoutParams(-1, -1));
         setContentView(root);
+        try {
+            downloads=new DownloadStore(new File(getCacheDir(),"exports"));
+            if(state!=null && state.getString("save.id")!=null) {
+                try { pendingSave=downloads.restore(state.getString("save.id"),state.getString("save.name"),state.getString("save.mime"),state.getLong("save.size")).id; }
+                catch(Exception invalid) { pendingSave=null; }
+            }
+            downloads.pruneOrphans();
+        }
+        catch(Exception error) { status.setText("无法准备导出缓存，请检查手机存储空间。"); return; }
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setDomStorageEnabled(true);
@@ -95,7 +111,10 @@ public class MainActivity extends Activity {
                 intent.addCategory(Intent.CATEGORY_OPENABLE);
                 // Android providers often mislabel fonts and .adofai files. The
                 // existing editor validates content and size after selection.
-                intent.setType("*/*");
+                if(java.util.Arrays.toString(params.getAcceptTypes()).contains("image/")) {
+                    intent.setType("image/*");
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES,new String[]{"image/png","image/jpeg"});
+                } else intent.setType("*/*");
                 intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
                 try { startActivityForResult(intent, PICK_FILE); }
                 catch (android.content.ActivityNotFoundException error) {
@@ -127,7 +146,14 @@ public class MainActivity extends Activity {
     }
 
     private File prepareResources() throws Exception {
-        File directory = new File(getFilesDir(), "runtime-" + BuildConfig.VERSION_NAME);
+        String fingerprint;
+        try(InputStream info=getAssets().open("runtime/bundle-info.json");ByteArrayOutputStream bytes=new ByteArrayOutputStream()) {
+            byte[] buffer=new byte[4096];int count;
+            while((count=info.read(buffer))!=-1)bytes.write(buffer,0,count);
+            fingerprint=new JSONObject(bytes.toString("UTF-8")).getString("resourceFingerprint");
+        }
+        if(!fingerprint.matches("[a-f0-9]{64}"))throw new java.io.IOException("Invalid resource fingerprint");
+        File directory = new File(getFilesDir(), "runtime-" + fingerprint);
         File complete = new File(directory, ".complete");
         if (complete.isFile()) return directory;
         if (!directory.isDirectory() && !directory.mkdirs()) throw new java.io.IOException("Cannot prepare resources");
@@ -156,7 +182,7 @@ public class MainActivity extends Activity {
             throw new java.io.IOException("Bundled resources are incomplete");
         }
         try (FileOutputStream marker = new FileOutputStream(complete)) {
-            marker.write(BuildConfig.VERSION_NAME.getBytes(StandardCharsets.UTF_8));
+            marker.write(fingerprint.getBytes(StandardCharsets.UTF_8));
             marker.getFD().sync();
         }
         return directory;
@@ -168,13 +194,43 @@ public class MainActivity extends Activity {
             fileCallback.onReceiveValue(result == RESULT_OK && data != null && data.getData() != null ? new Uri[]{data.getData()} : null);
             fileCallback = null;
         }
+        if(request==SAVE_FILE && pendingSave!=null) {
+            String id=pendingSave;
+            pendingSave=null;
+            if(result!=RESULT_OK) { downloadResult(id,"cancelled",""); return; }
+            Uri destination=data==null?null:data.getData();
+            if(destination==null) { downloadResult(id,"error","系统未返回文件位置，请重试保存"); return; }
+            startup.execute(()->{
+                try {
+                    DownloadStore.Transfer transfer=downloads.get(id);
+                    try(InputStream input=new FileInputStream(transfer.file);
+                        OutputStream output=getContentResolver().openOutputStream(destination,"wt")) {
+                        if(output==null) throw new java.io.IOException("无法写入所选位置");
+                        byte[] buffer=new byte[65536];int count;
+                        while((count=input.read(buffer))!=-1) output.write(buffer,0,count);
+                        output.flush();
+                    }
+                    downloadResult(id,"saved","");
+                } catch(Exception error) {
+                    downloadResult(id,"error","文件保存失败，请检查所选位置或手机存储空间，再重新导出");
+                }
+            });
+        }
+    }
+
+    private void downloadResult(String id,String state,String error) {
+        try { downloads.discard(id); } catch(Exception ignored) { /* Private cache can be reclaimed later. */ }
+        runOnUiThread(()->{
+            if(!isDestroyed() && webView!=null) webView.evaluateJavascript(
+                "window.adofaiDownloadResult&&window.adofaiDownloadResult("+JSONObject.quote(id)+","+JSONObject.quote(state)+","+JSONObject.quote(error)+")",null);
+        });
     }
 
     @Override public void onBackPressed() {
         if (closing) return;
         if (runtimePort == 0) { finish(); return; }
         closing = true;
-        webView.evaluateJavascript("(()=>{const f=window.adofaiCloseRequest;Promise.resolve(f?f():true).then(ok=>AndroidDevice.closeResult(!!ok)).catch(()=>AndroidDevice.closeResult(false));})()", null);
+        webView.evaluateJavascript("(()=>{const f=window.adofaiBackRequest||window.adofaiCloseRequest;Promise.resolve(f?f():true).then(ok=>AndroidDevice.closeResult(!!ok)).catch(()=>AndroidDevice.closeResult(false));})()", null);
     }
 
     public final class DeviceBridge {
@@ -182,16 +238,73 @@ public class MainActivity extends Activity {
         @JavascriptInterface public void closeResult(boolean saved) {
             runOnUiThread(() -> { closing = false; if (saved) finish(); });
         }
+        @JavascriptInterface public String beginDownload(String name,String mime,long size) {
+            try {
+                String id=downloads.begin(name,mime,size).id;
+                return new JSONObject().put("id",id).toString();
+            } catch(Exception error) { return failure(error); }
+        }
+        @JavascriptInterface public String appendDownload(String id,long offset,String encoded) {
+            try { return new JSONObject().put("written",downloads.append(id,offset,encoded)).toString(); }
+            catch(Exception error) { return failure(error); }
+        }
+        @JavascriptInterface public String finishDownload(String id) {
+            try {
+                if(pendingSave!=null) throw new IllegalStateException("请先完成当前文件的保存");
+                DownloadStore.Transfer transfer=downloads.complete(id);
+                pendingSave=id;
+                runOnUiThread(()->{
+                    Intent intent=new Intent(Intent.ACTION_CREATE_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType(transfer.mime);
+                    intent.putExtra(Intent.EXTRA_TITLE,transfer.name);
+                    try { startActivityForResult(intent,SAVE_FILE); }
+                    catch(android.content.ActivityNotFoundException error) {
+                        pendingSave=null;downloadResult(id,"error","无法打开系统保存界面，请确认系统文件管理器可用");
+                    }
+                });
+                return new JSONObject().put("queued",true).toString();
+            } catch(Exception error) { return failure(error); }
+        }
+        @JavascriptInterface public void cancelDownload(String id) {
+            if(!id.equals(pendingSave)) { try {downloads.discard(id);} catch(Exception ignored) {} }
+        }
+        private String failure(Exception error) {
+            try {return new JSONObject().put("error",error.getMessage()==null?"文件处理失败，请重试":error.getMessage()).toString();}
+            catch(Exception impossible) {return "{\"error\":\"文件处理失败，请重试\"}";}
+        }
     }
 
     public int getRuntimePort() { return runtimePort; }
     public WebView getEditorWebView() { return webView; }
+
+    @Override protected void onPause() {
+        if(webView!=null && runtimePort!=0) webView.evaluateJavascript("window.adofaiCloseRequest&&window.adofaiCloseRequest()",null);
+        super.onPause();
+    }
+
+    @Override protected void onSaveInstanceState(Bundle state) {
+        if(pendingSave!=null && downloads!=null) {
+            try {
+                DownloadStore.Transfer transfer=downloads.get(pendingSave);
+                state.putString("save.id",transfer.id);state.putString("save.name",transfer.name);
+                state.putString("save.mime",transfer.mime);state.putLong("save.size",transfer.expected);
+            } catch(Exception ignored) {}
+        }
+        super.onSaveInstanceState(state);
+    }
 
     @Override protected void onDestroy() {
         if (fileCallback != null) { fileCallback.onReceiveValue(null); fileCallback = null; }
         if (webView != null) {
             webView.removeJavascriptInterface("AndroidDevice");
             webView.destroy();
+        }
+        if(downloads!=null) {
+            try {
+                if(pendingSave!=null&&!isFinishing())downloads.detach(pendingSave);
+                downloads.close();
+            } catch(Exception ignored) {}
         }
         startup.shutdown();
         super.onDestroy();

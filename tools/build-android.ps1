@@ -3,7 +3,10 @@ $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
 try {
-    $env:JAVA_HOME=if($env:ADOFAI_JAVA_HOME){$env:ADOFAI_JAVA_HOME}else{'C:\Program Files\Java\jdk-17'}
+    $javaCandidates=@($env:ADOFAI_JAVA_HOME,$env:JAVA_HOME,(Join-Path $env:ProgramFiles 'Java/jdk-17'))
+    $taskJavaHome=$javaCandidates | Where-Object {$_ -and (Test-Path -LiteralPath (Join-Path $_ 'release')) -and ((Get-Content -LiteralPath (Join-Path $_ 'release') -Raw) -match 'JAVA_VERSION="(17|21|23)(\.|\")')} | Select-Object -First 1
+    if(-not $taskJavaHome){throw 'Set ADOFAI_JAVA_HOME to a supported JDK 17 or 21 installation'}
+    $env:JAVA_HOME=$taskJavaHome
     $env:ANDROID_HOME=Join-Path $projectRoot 'tools/android-sdk'
     $env:GRADLE_USER_HOME=Join-Path $projectRoot 'tools/android-gradle-cache'
     $env:ADOFAI_BUILD_PYTHON=Join-Path $projectRoot '.venv/Scripts/python.exe'

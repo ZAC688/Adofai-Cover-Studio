@@ -72,6 +72,7 @@ export default function App() {
   const [view, setView] = useState<'editor' | 'mask'>('editor');
   const [exportOpen, setExportOpen] = useState(false);
   const [infoOpen,setInfoOpen]=useState(false);
+  const [downloadNotice,setDownloadNotice]=useState('');
   const [chartTarget,setChartTarget]=useState<TrackId|'new'|null>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const renderer=useRef<LatestRenderer<Project,HTMLCanvasElement>|null>(null);
@@ -136,7 +137,25 @@ export default function App() {
   useEffect(()=>{
     const host=window as Window&{adofaiCloseRequest?:()=>Promise<boolean>};
     host.adofaiCloseRequest=async()=>{end();try{await queue.current?.flush();return !queue.current?.isDirty();}catch(problem){setError(String(problem));return false;}};
-    return()=>{delete host.adofaiCloseRequest;};
+    host.adofaiBackRequest=async()=>{
+      const dialog=[...document.querySelectorAll<HTMLElement>('[role="dialog"][aria-modal="true"]')].filter(item=>item.getClientRects().length).at(-1);
+      if(dialog){const close=dialog.querySelector<HTMLButtonElement>('button[aria-label^="关闭"],.mask-toolbar .primary');if(close&&!close.disabled)close.click();return false;}
+      return host.adofaiCloseRequest!();
+    };
+    return()=>{delete host.adofaiCloseRequest;delete host.adofaiBackRequest;};
+  },[end]);
+  useEffect(()=>{
+    let timer:ReturnType<typeof setTimeout>|null=null;
+    const notice=(event:Event)=>{const text=(event as CustomEvent<unknown>).detail;if(typeof text!=='string')return;setDownloadNotice(text);if(timer)clearTimeout(timer);timer=setTimeout(()=>setDownloadNotice(''),6000);};
+    window.addEventListener('adofai-download-status',notice);
+    return()=>{window.removeEventListener('adofai-download-status',notice);if(timer)clearTimeout(timer);};
+  },[]);
+  useEffect(()=>{
+    if(!window.AndroidDevice)return;
+    const persist=()=>{end();void queue.current?.flush().catch(problem=>setError(String(problem)));};
+    const visibility=()=>{if(document.visibilityState==='hidden')persist();};
+    document.addEventListener('visibilitychange',visibility);window.addEventListener('pagehide',persist);
+    return()=>{document.removeEventListener('visibilitychange',visibility);window.removeEventListener('pagehide',persist);};
   },[end]);
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -281,7 +300,7 @@ export default function App() {
 
   async function shutdownApp() {
     end(); setClosing(true);
-    try { await queue.current?.flush(); await api('/shutdown', {method:'POST'}); setClosed(true);Object.assign(window,{adofaiShutdownComplete:true}); }
+    try { await queue.current?.flush(); await api('/shutdown', {method:'POST'}); setClosed(true);Object.assign(window,{adofaiShutdownComplete:true});window.AndroidDevice?.closeResult(true); }
     catch(problem) {setError(problem instanceof Error ? problem.message : '退出失败，请先保存后重试');}
     finally {setClosing(false);}
   }
@@ -393,6 +412,7 @@ export default function App() {
     <input ref={trackInput} aria-label="轨道文件" type="file" accept="image/png,image/jpeg" hidden onChange={e=>{uploadTrack(e.target.files?.[0]);e.target.value='';}}/>
     <input ref={fontInput} aria-label="字体文件" type="file" accept=".ttf,.otf,.woff,.woff2" hidden onChange={event=>{void uploadFont(event.target.files?.[0]);event.target.value='';}}/>
     {uploading && <div className="busy-toast" role="status">正在读取并保存素材…</div>}
+    {!uploading&&downloadNotice&&<div className="busy-toast" role="status" data-native-download-status>{downloadNotice}</div>}
     {feature && view==='mask' && <feature.MaskEditor key={selected} {...actions} close={()=>setView('editor')} onError={setError}/>}
     {feature && exportOpen && <feature.ExportDialog project={project} close={()=>setExportOpen(false)} onError={setError}/>}
     {stickerOpen&&<StickerPicker close={()=>setStickerOpen(false)} onError={setError} add={(item:Sticker,asset:Asset)=>{setAssets(previous=>({...previous,[asset.id]:asset}));let id:ObjectId|null=null;change(next=>{id=addSticker(next,item,asset);});if(id)setSelected(id);}}/>}

@@ -5,6 +5,7 @@ import {captureTextStyle,applyTextStyle,type TextPreset} from '../domain/textPre
 import {registerFonts,type UploadedFont} from '../services/fonts';
 import {api,jsonRequest} from '../services/api';
 import {exportName} from './exportName';
+import {saveBlob} from '../services/downloads';
 
 type Item={id:string;name:string;count:number};
 type Prepared=TextPreset&{assets:Asset[];fonts:UploadedFont[]};
@@ -27,9 +28,9 @@ export function TextPresets({actions,target,onError}:{actions:EditorActions;targ
       for(const asset of value.assets)actions.addAsset(asset);
       actions.end();actions.change(next=>applyTextStyle(next,target,value));setMessage('已应用文字预设，可撤销');
     })}>应用文字预设</button><button disabled={busy||!selected} onClick={()=>void run(async()=>{
-      const file=await api<unknown>('/text-presets/'+chosen),url=URL.createObjectURL(new Blob([JSON.stringify(file,null,2)],{type:'application/json'}));
-      if(!alive.current){URL.revokeObjectURL(url);return;}
-      const link=document.createElement('a');link.href=url;link.download=exportName(selected!.name).slice(0,-4)+'.adofai-text.json';link.click();setTimeout(()=>URL.revokeObjectURL(url),3000);
+      const file=await api<unknown>('/text-presets/'+chosen);
+      if(!alive.current)return;
+      await saveBlob(new Blob([JSON.stringify(file,null,2)],{type:'application/json'}),exportName(selected!.name).slice(0,-4)+'.adofai-text.json');
     })}>导出文字预设</button><button disabled={busy} onClick={()=>input.current?.click()}>导入文字预设</button></div>
     <input ref={input} aria-label="文字预设文件" hidden type="file" accept=".json,application/json" disabled={busy} onChange={event=>{const file=event.target.files?.[0];event.target.value='';if(file)void run(async()=>{if(file.size>100_000_000)throw new Error('文字预设不能超过 100 MB');const body=new FormData();body.append('file',file);remember(await api<Item>('/text-presets/import',{method:'POST',body}));});}}/>
     <p className="asset-meta" role="status">{busy?'正在处理文字预设…':message}</p>

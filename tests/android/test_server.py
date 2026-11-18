@@ -73,6 +73,18 @@ def test_images_save_conflicts_and_restart_restore_real_files(runtime_client):
     assert image.size == (80, 60) and image.getpixel((0, 0)) == (207, 159, 80, 255)
 
 
+def test_streamed_phone_provider_upload_without_content_length(runtime_client):
+    client, _runtime = runtime_client
+    boundary='phone-streamed-file'
+    body=(f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="phone.png"\r\nContent-Type: image/png\r\n\r\n'.encode()
+          +png()+f'\r\n--{boundary}--\r\n'.encode())
+    response=client.post('/api/assets',content=(body[offset:offset+97] for offset in range(0,len(body),97)),
+                         headers={'Content-Type':f'multipart/form-data; boundary={boundary}'})
+    asset=checked(response)
+    assert (asset['width'],asset['height'])==(80,60)
+    assert Image.open(io.BytesIO(client.get('/api/assets/'+asset['id']).content)).getpixel((0,0))==(207,159,80,255)
+
+
 def test_invalid_file_project_and_path_cannot_damage_saved_work(runtime_client):
     client, runtime = runtime_client
     before = checked(client.get('/api/project'))

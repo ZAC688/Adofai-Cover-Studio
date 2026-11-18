@@ -40,7 +40,9 @@ def prepare():
             content = path.read_bytes()
             bundle.writestr(name, content)
             manifest.append({'path': name, 'size': len(content), 'sha256': hashlib.sha256(content).hexdigest()})
-    (assets / 'resource-manifest.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding='utf-8')
+    manifest_bytes=json.dumps(manifest, ensure_ascii=False, indent=2).encode('utf-8')
+    (assets / 'resource-manifest.json').write_bytes(manifest_bytes)
+    (assets / 'bundle-info.json').write_text(json.dumps({'resourceFingerprint':hashlib.sha256(manifest_bytes).hexdigest()}),encoding='utf-8')
     drawable = ROOT / 'android/app/src/main/res/drawable'
     drawable.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT / 'frontend/public/app-icon.png', drawable / 'app_icon.png')

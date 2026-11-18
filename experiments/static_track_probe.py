@@ -12,6 +12,7 @@ import hashlib
 from html import escape
 import json
 import math
+import os
 from pathlib import Path
 import re
 
@@ -296,7 +297,11 @@ def bounds(tiles):
 
 
 def get_font(size):
-    for path in (Path("C:/Windows/Fonts/msyh.ttc"), Path("C:/Windows/Fonts/arial.ttf")):
+    from experiments.p0 import resource_root
+    candidates=(Path("C:/Windows/Fonts/msyh.ttc"), Path("C:/Windows/Fonts/arial.ttf"))
+    if os.environ.get('ADOFAI_ANDROID')=='1':
+        candidates=(resource_root()/'frontend/dist/fonts/noto-sans-sc.ttf',)
+    for path in candidates:
         if path.is_file():
             return ImageFont.truetype(str(path), size)
     return ImageFont.load_default()

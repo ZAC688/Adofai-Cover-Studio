@@ -229,17 +229,51 @@ class Handler(BaseHTTPRequestHandler):
         super().setup()
         self.connection.settimeout(30)
 
+    def read_body(self, discard=False):
+        encoding=self.headers.get('Transfer-Encoding','').strip().lower()
+        if encoding and (encoding!='chunked' or self.headers.get('Content-Length') is not None):
+            raise ValueError('请求传输格式无效')
+        output=io.BytesIO()
+        total=0
+
+        def read_bytes(length):
+            nonlocal total
+            if length<0 or total+length>101_000_000:
+                raise PayloadTooLarge('文件过大')
+            remaining=length
+            while remaining:
+                chunk=self.rfile.read(min(remaining,65536))
+                if not chunk:raise ValueError('文件未完整读取，请重试')
+                if not discard:output.write(chunk)
+                remaining-=len(chunk)
+                total+=len(chunk)
+
+        if encoding=='chunked':
+            while True:
+                line=self.rfile.readline(8193)
+                if len(line)>8192 or not line.endswith(b'\r\n'):raise ValueError('文件数据块头无效')
+                size_text=line[:-2].split(b';',1)[0]
+                if not re.fullmatch(b'[0-9a-fA-F]+',size_text):raise ValueError('文件数据块长度无效')
+                size=int(size_text,16)
+                if size==0:
+                    trailers=0
+                    while True:
+                        line=self.rfile.readline(8193);trailers+=len(line)
+                        if not line or trailers>8192:raise ValueError('文件结束标记无效')
+                        if line==b'\r\n':break
+                    break
+                read_bytes(size)
+                if self.rfile.read(2)!=b'\r\n':raise ValueError('文件数据块未完整读取')
+        else:
+            read_bytes(int(self.headers.get('Content-Length','0')))
+        return output.getvalue()
+
     def reject_session(self):
         # Closing a socket with unread POST bytes can reset the connection before
         # the caller receives the 403. Drain bounded bytes without parsing them.
         self.close_connection = True
         try:
-            remaining = int(self.headers.get('Content-Length', '0'))
-            if 0 <= remaining <= 101_000_000:
-                while remaining:
-                    chunk = self.rfile.read(min(remaining, 65536))
-                    if not chunk: break
-                    remaining -= len(chunk)
+            self.read_body(discard=True)
         except (OSError, ValueError):
             pass
         return self.respond(403, {'detail': '请求会话无效或不是本机访问'})
@@ -280,11 +314,7 @@ class Handler(BaseHTTPRequestHandler):
                 self.close_connection = True
                 if self.headers.get('Origin', 'http://' + expected) != 'http://' + expected or not secrets.compare_digest(self.headers.get('x-editor-token', ''), runtime.token):
                     return self.reject_session()
-                length = int(self.headers.get('Content-Length', '0'))
-                if not 0 <= length <= 101_000_000:
-                    return self.respond(413, {'detail': '文件过大'})
-                raw = self.rfile.read(length)
-                if len(raw) != length: raise ValueError('文件未完整读取，请重试')
+                raw = self.read_body()
                 content_type = self.headers.get('Content-Type', '')
                 if content_type.startswith('multipart/form-data'):
                     message = BytesParser(policy=email_policy).parsebytes(('Content-Type: ' + content_type + '\r\nMIME-Version: 1.0\r\n\r\n').encode() + raw)
