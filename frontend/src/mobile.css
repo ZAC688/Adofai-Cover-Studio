@@ -1,0 +1,117 @@
+/* A single responsive editor: retain the desktop layout above the breakpoint. */
+.mobile-tabs{display:none}
+@media(max-width:1049px){body{min-width:0}.boot{width:100%;min-width:0;padding:20px;text-align:center}}
+body:has(.mobile-layout){min-width:0;overflow:hidden;overscroll-behavior:none}
+.mobile-layout{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden;--canvas-ratio:1.7777778}
+.mobile-layout button{touch-action:manipulation}
+.mobile-layout[data-ratio="4:3"]{--canvas-ratio:1.3333333}
+.mobile-layout .topbar{height:auto;flex:none;display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:4px;padding:6px 8px}
+.mobile-layout .identity{grid-area:1/1;min-width:0;gap:5px}
+.mobile-layout .identity h1{font-size:11px;white-space:normal;line-height:1.3;margin:0}
+.mobile-layout .identity .eyebrow,.mobile-layout .identity .brand-mark{display:none}
+.mobile-layout .history-buttons{grid-area:1/2;gap:2px}
+.mobile-layout .history-buttons button{width:36px;height:40px;padding:0;font-size:22px}
+.mobile-layout .export-trigger{grid-area:1/3;font-size:11px;padding:8px;min-height:40px;white-space:nowrap}
+.mobile-layout .export-trigger span{display:none}
+.mobile-layout .info-trigger{grid-area:1/4;font-size:11px;padding:8px;min-height:40px}
+.mobile-layout .project-name{grid-area:2/1/3/3;width:100%;max-width:none;height:30px;font-size:12px;margin:0;padding:4px 6px}
+.mobile-layout .save-state{grid-area:2/3/3/5;min-width:0;max-width:none;text-align:right;font-size:10px;overflow-wrap:anywhere;line-height:1.2}
+.mobile-layout .toolbar-imports{grid-area:3/1/4/5;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;width:100%;min-width:0}
+.mobile-layout .topbar .toolbar-upload,.mobile-layout .toolbar-chart{min-width:0;width:100%;min-height:40px;padding:5px;font-size:12px;justify-content:center}
+.mobile-layout .toolbar-upload strong{font-size:12px}.mobile-layout .toolbar-upload>span{display:none}
+.mobile-layout .error-banner{flex:none;max-height:72px;overflow:auto;font-size:12px;padding:8px}
+.mobile-layout .editor-layout{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(130px,38%) minmax(0,1fr)}
+.mobile-layout .workspace{grid-area:1/1;min-height:0;overflow:hidden}
+.mobile-layout .canvas-toolbar{height:34px;min-height:34px;padding:0 8px;gap:5px;flex:none}
+.mobile-layout .canvas-toolbar .micro,.mobile-layout .canvas-caption{display:none}
+.mobile-layout .ratio-switch{margin-left:0}.mobile-layout .ratio-switch button{padding:7px 12px;min-height:32px}
+.mobile-layout .dimensions{margin-left:auto;font-size:10px}
+.mobile-layout .canvas-area{min-height:0;padding:5px 8px 8px;container-type:size;overflow:hidden}
+.mobile-layout .canvas-stage{width:min(100cqw,calc(100cqh * var(--canvas-ratio)));max-width:100%!important;height:auto;flex:none}
+.mobile-layout .canvas-footer{display:none}
+.mobile-layout .objects-panel,.mobile-layout .properties-panel{grid-area:2/1;min-width:0;min-height:0;height:auto;max-height:100%;overflow:hidden;border-top:1px solid #444;display:flex;flex-direction:column}
+.mobile-layout[data-mobile-panel="objects"] .properties-panel{display:none}
+.mobile-layout:not([data-mobile-panel="objects"]) .objects-panel{display:none}
+.mobile-layout .panel-heading{padding:9px 12px;font-size:12px;flex:none}
+.mobile-layout .property-tabs{display:none}
+.mobile-layout .properties-content{min-height:0;flex:1;overflow:auto;overscroll-behavior:contain;padding:2px 14px 20px;scroll-padding:12px}
+.mobile-layout .properties-content .field{margin:14px 0}
+.mobile-layout .properties-content input:not([type=range],[type=checkbox],[type=color]),.mobile-layout textarea,.mobile-layout select{font-size:16px;max-width:100%;min-height:40px}
+.mobile-layout .properties-content textarea{height:64px;min-height:64px}
+.mobile-layout input[type=range]{height:26px;margin:8px 0;touch-action:pan-y}
+.mobile-layout input[type=checkbox]{width:22px;height:22px;flex:none}
+.mobile-layout input[type=color]{width:44px;height:40px;flex:none}
+.mobile-layout .number-field label{gap:10px}.mobile-layout input[type=number]{width:102px}
+.mobile-layout .settings-toggle,.mobile-layout .effects-panel>summary{min-height:44px;display:flex;align-items:center;justify-content:space-between}
+.mobile-layout .effect-switch{min-height:40px;gap:8px}
+.mobile-layout[data-mobile-panel="properties"] .properties-content>:is(.effects-panel,.shadow-panel,.text3d-panel,.collapsible-settings){display:none}
+.mobile-layout[data-mobile-panel="effects"] .properties-content>:not(.effects-panel,.shadow-panel,.text3d-panel,.collapsible-settings,.mobile-effects-note){display:none}
+.mobile-layout .mobile-effects-note{font-size:13px;line-height:1.7;color:#bbb}
+.mobile-layout .objects-panel{overflow-y:auto}
+.mobile-layout .object-list{flex:none;min-height:96px;max-height:max(96px,26dvh);overflow:auto;padding:0 8px;overscroll-behavior:contain}
+.mobile-layout .object-entry{display:flex;align-items:center;min-width:0;position:relative}
+.mobile-layout .object-row{flex:1;min-width:0;min-height:48px;padding:8px}
+.mobile-layout .object-row small{max-width:180px}.mobile-layout .object-row strong{font-size:13px}
+.mobile-layout .touch-reorder{align-self:stretch;flex:none;width:34px;padding:0;border-color:transparent;background:transparent;font-size:25px;touch-action:none}
+.mobile-layout .reorder-target{box-shadow:inset 0 2px #ddd;border-radius:4px}
+.mobile-layout .object-menu-trigger{min-width:36px;height:40px}
+.mobile-layout .object-actions{padding:8px;gap:6px;display:flex;flex-wrap:wrap}
+.mobile-layout .object-actions button{min-height:36px;padding:6px 9px;font-size:12px}
+.mobile-layout .layer-help{font-size:10px;margin:3px 10px}
+.mobile-layout .local-note{padding:5px 10px;gap:5px;font-size:10px;min-height:30px}
+.mobile-layout .local-note button{margin-left:auto}
+.mobile-layout .mobile-tabs{position:relative;z-index:10;flex:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));min-height:52px;padding:4px 6px;gap:4px;background:#1d1d1d;border-top:1px solid #444}
+.mobile-layout .mobile-tabs button{border:0;background:transparent;color:#aaa;border-radius:6px;font-size:13px;min-height:44px}
+.mobile-layout .mobile-tabs button[aria-selected=true]{background:#e0e0e0;color:#171717;font-weight:600}
+.mobile-layout .modal-backdrop{padding:8px;overflow:hidden;align-items:center}
+.mobile-layout .modal{width:calc(100vw - 16px);max-width:none;min-width:0;max-height:calc(100dvh - 16px);padding:12px;overflow:auto;overscroll-behavior:contain}
+.mobile-layout .modal-header{gap:8px;min-height:40px}.mobile-layout .modal-header h2{font-size:16px;min-width:0;margin:0}
+.mobile-layout .modal-header button{min-width:40px;min-height:40px;flex:none}
+.mobile-layout .modal-actions{display:flex;flex-wrap:wrap;gap:7px;position:sticky;bottom:-12px;background:#222;padding:10px 0;z-index:2}
+.mobile-layout .modal-actions button{min-height:40px}.mobile-layout .modal-actions .micro{flex-basis:100%;font-size:10px;letter-spacing:0}
+.mobile-layout .export-preview{max-width:100%;max-height:36dvh;width:auto;height:auto;margin:8px auto}
+.mobile-layout .export-details{display:flex;flex-wrap:wrap;gap:8px}.mobile-layout .export-details input{width:100%;min-width:0;flex-basis:100%;font-size:16px}
+.mobile-layout .info-tabs{flex-wrap:wrap;gap:5px}.mobile-layout .info-tabs button{min-height:40px;font-size:12px;padding:6px 10px}
+.mobile-layout .info-body{height:55dvh;padding-right:2px}.mobile-layout .info-body dl{grid-template-columns:65px minmax(0,1fr)}
+.mobile-layout .sticker-browser{display:grid;grid-template-columns:minmax(0,1fr);height:auto;max-height:none;gap:10px}
+.mobile-layout .sticker-browser nav{display:flex;overflow:auto;gap:5px;max-height:100px;flex-wrap:wrap;border:0;padding:0}
+.mobile-layout .sticker-browser nav button{min-height:36px;padding:5px 8px!important;width:auto;flex:none;font-size:12px}
+.mobile-layout .sticker-grid{grid-template-columns:repeat(3,minmax(0,1fr));max-height:36dvh;min-height:80px;padding:4px;gap:6px}
+.mobile-layout .sticker-grid button{min-width:0;padding:5px;min-height:76px;overflow-wrap:anywhere}
+.mobile-layout .sticker-grid img{max-width:100%;height:45px;object-fit:contain}
+.mobile-layout .sticker-detail{min-width:0;padding:8px;max-height:28dvh;overflow:auto}.mobile-layout .sticker-detail>img{max-height:64px}
+.mobile-layout .fusion-layout,.mobile-layout .range-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.mobile-layout .fusion-pictures{min-width:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mobile-layout .fusion-pictures h3{font-size:11px}.mobile-layout .fusion-controls,.mobile-layout .range-layout aside{max-height:none;padding:0;min-width:0}
+.mobile-layout .range-stage{max-height:40dvh;min-width:0}.mobile-layout .range-stage canvas{object-fit:contain}
+.mobile-layout .chart-editor{height:calc(100dvh - 16px);padding:8px;gap:8px}
+.mobile-layout .chart-editor iframe{min-height:120px}.mobile-layout .chart-editor .chart-empty{padding:30px 8px}
+.mobile-layout .chart-metadata{padding:8px;margin:0;gap:8px;font-size:11px;max-height:20dvh;overflow:auto}
+.mobile-layout .chart-result-image{height:40dvh}.mobile-layout .chart-busy{inset:55px 0 0}
+.mobile-layout .mask-workspace{inset:0;width:100%;height:100dvh;display:flex;flex-direction:column;min-width:0}
+.mobile-layout .mask-toolbar{flex-wrap:wrap;padding:7px;gap:5px}.mobile-layout .mask-toolbar h2{font-size:14px;margin:0;width:100%}
+.mobile-layout .mask-toolbar button{min-height:36px;font-size:11px;padding:5px 7px}
+.mobile-layout .mask-stage-wrap{min-height:60px;flex:1}.mobile-layout .mask-footer{flex-wrap:wrap;gap:5px;padding:7px;font-size:11px}
+.mobile-layout .mask-footer label{max-width:75%;min-width:0}.mobile-layout .mask-footer input{max-width:160px}
+.mobile-layout .busy-toast{left:12px;right:12px;bottom:65px;max-width:calc(100vw - 24px);font-size:12px}
+.mobile-layout .empty-canvas>span{font-size:24px}.mobile-layout .empty-canvas h2{font-size:15px;margin:6px 0 0}.mobile-layout .empty-canvas p{font-size:10px;margin:5px 0 8px}.mobile-layout .empty-canvas button{font-size:11px;padding:6px 12px;min-height:32px}
+.mobile-layout .filter-actions,.mobile-layout .preset-actions{flex-wrap:wrap}
+.mobile-layout .filter-vector{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+.mobile-layout .filter-vector input{width:100%}
+@media(max-height:500px){
+  .mobile-layout .empty-canvas>span,.mobile-layout .empty-canvas p{display:none}
+  .mobile-layout .empty-canvas h2{font-size:11px;margin:0 0 5px}
+  .mobile-layout .empty-canvas button{min-height:30px;padding:4px 8px}
+}
+@media(orientation:landscape) and (max-height:600px){
+  .mobile-layout .topbar{padding:4px 8px;gap:3px}
+  .mobile-layout .identity{display:none}
+  .mobile-layout .project-name{grid-area:1/1;min-width:0;height:36px}
+  .mobile-layout .toolbar-imports{grid-area:2/1/3/3}
+  .mobile-layout .save-state{grid-area:2/3/3/5}
+  .mobile-layout .editor-layout{grid-template-columns:minmax(0,1fr) minmax(250px,40%);grid-template-rows:minmax(0,1fr)}
+  .mobile-layout .workspace{grid-area:1/1}
+  .mobile-layout .objects-panel,.mobile-layout .properties-panel{grid-area:1/2;border-top:0;border-left:1px solid #444}
+  .mobile-layout .mobile-tabs{min-height:44px;padding:2px 6px}.mobile-layout .mobile-tabs button{min-height:40px}
+  .mobile-layout .modal-header h2{font-size:14px}.mobile-layout .info-body{height:48dvh}
+}

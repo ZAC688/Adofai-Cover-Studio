@@ -4,6 +4,8 @@ import { api, initSession, jsonRequest, upload } from './services/api';
 import { SaveQueue, type SaveStatus } from './services/saveQueue';
 import { compose, presentComposition, objectBounds } from './canvas/render';
 import './styles.css';
+import './mobile.css';
+import {useCompactLayout,useMobileButtons,type MobilePanel} from './services/mobile';
 import {EffectsPanel,CollapsibleSettings} from './features/EffectsPanel';
 import {ShadowPanel} from './features/ShadowPanel';
 import {StickerPicker} from './features/StickerPicker';
@@ -47,6 +49,9 @@ export function NumberField({label, value, min, max, step = 1, slider, onChange,
 }
 
 export default function App() {
+  const compact=useCompactLayout();
+  useMobileButtons(compact);
+  const [mobilePanel,setMobilePanel]=useState<MobilePanel>('properties');
   const [project, setProject] = useState<Project | null>(null);
   const [assets, setAssets] = useState<Assets>({});
   const [fonts,setFonts]=useState<UploadedFont[]>([]);
@@ -78,6 +83,8 @@ export default function App() {
   const fontInput=useRef<HTMLInputElement>(null);
   const [historyVersion, refreshHistory] = useState(0);
   const [feature, setFeature] = useState<null | typeof import('./features/Extras')>(null);
+  const layerDrag=useRef<{source:ObjectId;target:ObjectId}|null>(null);
+  const [layerTarget,setLayerTarget]=useState<ObjectId|null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -183,7 +190,7 @@ export default function App() {
     const size = dimensions(project.activeRatio);
     const point = screenPoint({x:event.clientX,y:event.clientY},event.currentTarget.getBoundingClientRect(),size);
     const selectedBox = boundsFor(selected);
-    const tolerance = 14 * size.width / event.currentTarget.getBoundingClientRect().width;
+    const tolerance = (event.pointerType==='touch'?22:14) * size.width / event.currentTarget.getBoundingClientRect().width;
     const pivot=isGraphic(selected)&&geometry?trackPivot(geometry,imagePosition(layout(project),selected)):selectedBox?center(selectedBox):position(layout(project),selected);
     const angle=position(layout(project),selected).rotation||0;
     const corner=selectedBox?rotatePoint({x:selectedBox.x+selectedBox.width,y:selectedBox.y+selectedBox.height},pivot,angle):null;
@@ -295,7 +302,7 @@ export default function App() {
   const actions: EditorActions = {project:isTrack(selected)?selectedTrackView(project,selected):project, assets,
     change:mutate=>change(next=>{if(isTrack(selected))changeTrack(next,selected,mutate);}), objectKey:selected,begin, end, addAsset: asset => setAssets(previous => ({...previous,[asset.id]:asset}))};
   void historyVersion;
-  return <div className="app-shell">
+  return <div className={'app-shell'+(compact?' mobile-layout':'')} data-mobile-panel={mobilePanel} data-ratio={project.activeRatio}>
     <header className="topbar"><div className="identity"><span className="brand-mark">A</span><div><h1>ADOFAI 封面制作器</h1><span className="eyebrow">COVER STUDIO · LOCAL</span></div></div>
       <div className="toolbar-imports"><button className="upload-card toolbar-upload" aria-label="上传底图" title="PNG / JPEG · 最大 10 MB" disabled={uploading} onClick={()=>backgroundInput.current?.click()}><span>▧</span><strong>上传底图</strong></button>
         <button className="upload-card toolbar-upload" aria-label="上传轨道" title="透明 PNG 或游戏截图 · 最大 10 MB" disabled={uploading} onClick={()=>trackInput.current?.click()}><span>◈</span><strong>上传轨道</strong></button>
@@ -308,8 +315,14 @@ export default function App() {
     </header>
     {error && <div className="error-banner" role="alert">{error}<button aria-label="关闭提示" onClick={()=>setError('')}>×</button></div>}
     <div className="editor-layout">
-      <aside className="objects-panel"><div className="panel-heading"><span>作品对象</span><span className="micro">{order(project).length} LAYERS</span></div>
-        <div className="object-list" aria-label="对象图层列表">{order(project).map((id,index) => <div key={id} className="object-entry"><button data-object-id={id} className={'object-row '+(id===selected?'selected':'')} aria-pressed={id===selected} draggable={id!=='bg'}
+      <aside id="objects-panel" className="objects-panel"><div className="panel-heading"><span>作品对象</span><span className="micro">{order(project).length} LAYERS</span></div>
+        <div className="object-list" aria-label="对象图层列表">{order(project).map((id,index) => <div key={id} data-layer-id={id} className={'object-entry'+(layerTarget===id?' reorder-target':'')}>
+          {compact&&id!=='bg'&&<button className="touch-reorder" aria-label={'拖动排序 '+nameFor(id)}
+            onPointerDown={event=>{end();layerDrag.current={source:id,target:id};event.currentTarget.setPointerCapture(event.pointerId);}}
+            onPointerMove={event=>{if(!layerDrag.current)return;const key=document.elementFromPoint(event.clientX,event.clientY)?.closest('[data-layer-id]')?.getAttribute('data-layer-id') as ObjectId|null;if(key&&order(project).includes(key)){layerDrag.current.target=key;setLayerTarget(key);}}}
+            onPointerUp={event=>{const pending=layerDrag.current;layerDrag.current=null;setLayerTarget(null);if(event.currentTarget.hasPointerCapture(event.pointerId))event.currentTarget.releasePointerCapture(event.pointerId);if(pending&&pending.source!==pending.target)change(next=>reorderObject(next,pending.source,pending.target));}}
+            onPointerCancel={()=>{layerDrag.current=null;setLayerTarget(null);}}>⠿</button>}
+          <button data-object-id={id} className={'object-row '+(id===selected?'selected':'')} aria-pressed={id===selected} draggable={!compact&&id!=='bg'}
           onDragStart={event=>{end();event.dataTransfer.setData('text/plain',id);event.dataTransfer.effectAllowed='move';}}
           onDragOver={event=>{event.preventDefault();event.dataTransfer.dropEffect='move';}}
           onDrop={event=>{event.preventDefault();const source=event.dataTransfer.getData('text/plain');if(order(project).includes(source as ObjectId)){end();change(next=>reorderObject(next,source as ObjectId,id));}}}
@@ -334,11 +347,12 @@ export default function App() {
           {isGraphic(selected)&&box&&<div className="track-handles" aria-label="轨道缩放手柄" style={{left:box.x/size.width*100+'%',top:box.y/size.height*100+'%',width:box.width/size.width*100+'%',height:box.height/size.height*100+'%',transformOrigin:`${(pivot.x-box.x)/box.width*100}% ${(pivot.y-box.y)/box.height*100}%`,transform:`rotate(${placement.rotation||0}deg)`}}><span className="resize-handle"/><span className="rotation-handle" aria-label="旋转手柄"/></div>}
           {!project.bgAsset && !order(project).some(id=>titleObject(id)?titleFor(project,id).text:isGraphic(id)&&graphicAsset(project,id)) && <div className="empty-canvas"><span>◈</span><h2>从一张底图开始</h2><p>上传素材，制作你的下一张音游封面</p><button onClick={()=>backgroundInput.current?.click()}>选择底图</button></div>}
         </div></div>
-        <footer className="canvas-footer"><span>{nameFor(selected)} · 拖动调整位置</span><span>Ctrl + Z 撤销 · Ctrl + Shift + Z 重做</span></footer>
+        <footer className="canvas-footer"><span>{nameFor(selected)} · 拖动调整位置</span><span>{compact?'点击对象选择 · 拖动手柄缩放 / 旋转':'Ctrl + Z 撤销 · Ctrl + Shift + Z 重做'}</span></footer>
       </main>
-      <aside className="properties-panel"><div className="panel-heading"><span>{propertyTab==='filters'?'PixiJS 滤镜':nameFor(selected)}</span><span className="micro">PROPERTIES</span></div>
+      <aside id="properties-panel" className="properties-panel"><div className="panel-heading"><span>{propertyTab==='filters'?'PixiJS 滤镜':nameFor(selected)}</span><span className="micro">PROPERTIES</span></div>
         <div className="property-tabs"><button aria-pressed={propertyTab==='object'} onClick={()=>{end();setPropertyTab('object');}}>对象属性</button><button aria-pressed={propertyTab==='filters'} onClick={()=>{end();setPropertyTab('filters');}}>滤镜</button></div>
         <div className="properties-content">
+          {compact&&mobilePanel==='effects'&&selected==='bg'&&<p className="mobile-effects-note">底图效果可在“滤镜”中调整。选择文字、轨道或贴纸可设置对应光效与阴影。</p>}
           {propertyTab==='filters'?<FilterPanel key={selected} actions={{project,assets,change,begin,end,getProject:()=>current.current!,addAsset:asset=>setAssets(previous=>({...previous,[asset.id]:asset})),addFonts:list=>setFonts(previous=>Array.from(new Map([...previous,...list].map(font=>[font.id,font])).values()))}} selected={selected} onError={setError}/>:<>
           {isTitle ? <><label className="field">标题内容<textarea aria-label="标题内容" rows={3} maxLength={300} placeholder={titleIndex===0?'输入曲名或主标题':'输入作者、难度或副标题'} value={project.titles[titleIndex].text} onFocus={begin} onBlur={end} onChange={e=>change(next=>{next.titles[titleIndex].text=e.target.value.replace(/[\r\n]+/g,' ');})}/></label>
             <label className="field">字体<select aria-label="字体" value={project.titles[titleIndex].fontId||'system'} onChange={event=>change(next=>{next.titles[titleIndex].fontId=event.target.value;})}>
@@ -374,6 +388,7 @@ export default function App() {
         </div>
       </aside>
     </div>
+    <nav className="mobile-tabs" role="tablist" aria-label="手机编辑栏目">{([['objects','对象'],['properties','属性'],['effects','光效'],['filters','滤镜']] as const).map(([panel,label])=><button key={panel} role="tab" aria-selected={mobilePanel===panel} aria-controls={panel==='objects'?'objects-panel':'properties-panel'} onClick={()=>{if(document.activeElement instanceof HTMLElement)document.activeElement.blur();end();setMobilePanel(panel);setPropertyTab(panel==='filters'?'filters':'object');}}>{label}</button>)}</nav>
     <input ref={backgroundInput} aria-label="底图文件" type="file" accept="image/png,image/jpeg" hidden onChange={e=>{void uploadObject(e.target.files?.[0],'bg');e.target.value='';}}/>
     <input ref={trackInput} aria-label="轨道文件" type="file" accept="image/png,image/jpeg" hidden onChange={e=>{uploadTrack(e.target.files?.[0]);e.target.value='';}}/>
     <input ref={fontInput} aria-label="字体文件" type="file" accept=".ttf,.otf,.woff,.woff2" hidden onChange={event=>{void uploadFont(event.target.files?.[0]);event.target.value='';}}/>
