@@ -1,4 +1,4 @@
-param([ValidateSet('assembleDebug','assembleRelease','connectedDebugAndroidTest','testDebugUnitTest','lintDebug')][string]$Task='assembleDebug')
+param([ValidateSet('assembleDebug','assembleRelease','assembleDebugAndroidTest','connectedDebugAndroidTest','testDebugUnitTest','lintDebug')][string]$Task='assembleDebug')
 $ErrorActionPreference='Stop'
 $projectRoot=Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
@@ -10,10 +10,18 @@ try {
     $env:ANDROID_HOME=Join-Path $projectRoot 'tools/android-sdk'
     $env:GRADLE_USER_HOME=Join-Path $projectRoot 'tools/android-gradle-cache'
     $env:ADOFAI_BUILD_PYTHON=Join-Path $projectRoot '.venv/Scripts/python.exe'
+    if($Task -eq 'assembleRelease'){
+        & $env:ADOFAI_BUILD_PYTHON tools/sign_android.py --keytool (Join-Path $taskJavaHome 'bin/keytool.exe')
+        if($LASTEXITCODE -ne 0){throw 'Release identity could not be verified; existing keys are preserved'}
+    }
     & node tools/npm/package/bin/npm-cli.js --prefix frontend run build
     if($LASTEXITCODE -ne 0){throw 'Frontend build failed'}
     & $env:ADOFAI_BUILD_PYTHON tools/prepare_android.py
     if($LASTEXITCODE -ne 0){throw 'Android resource preparation failed'}
+    if($Task -in @('assembleDebugAndroidTest','connectedDebugAndroidTest')){
+        & $env:ADOFAI_BUILD_PYTHON tools/prepare_android_tests.py
+        if($LASTEXITCODE -ne 0){throw 'Android private test fixture preparation failed'}
+    }
     $arguments=@('-p','android','--console=plain','--stacktrace',$Task)
     if($env:HTTPS_PROXY){
         $proxyUri=[uri]$env:HTTPS_PROXY

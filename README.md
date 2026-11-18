@@ -2,6 +2,8 @@
 
 ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Windows 本地桌面工具。当前版本 **0.8.1**，作者 **ZAC688**。
 
+安卓适配版 **0.8.1-android.1** 正在测试，面向 OPPO Reno12，保留离线编辑功能并适配横竖屏。安卓安装包尚未发布到 GitHub Release；手机使用方法见 [安卓说明](docs/ANDROID_GUIDE.md)，运行验收进度见 [安卓开发记录](docs/ANDROID_PROGRESS.md)。
+
 ## 项目解决什么问题
 
 制作音游视频封面时，通常需要组合底图、轨道、曲名、标题和贴纸，再反复调整文字、光效与排版。本项目把这些操作放到同一个编辑器中，支持从截图提取轨道，或直接从 `.adofai` 谱面生成静态轨道，并复用文字与滤镜预设。
@@ -107,3 +109,6 @@ ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Wi
 - [0.8.0 开发记录](docs/UPGRADE_080_PROGRESS.md)：四项功能的历史测试与提交记录。
 - [0.8.1 性能热修](docs/HOTFIX_081.md)：预览延迟原因、修复与验证。
 - [实机验收清单](docs/MANUAL_ACCEPTANCE.md)：需要真实 Windows 环境检查的项目。
+- [安卓使用说明](docs/ANDROID_GUIDE.md)：APK 安装、触屏编辑、手机保存与导出。
+- [安卓实机检查](docs/ANDROID_ACCEPTANCE.md)：OPPO Reno12 待验收项目。
+- [安卓构建与测试](docs/ANDROID_BUILD.md)：独立构建、签名密钥保管与模拟器测试。

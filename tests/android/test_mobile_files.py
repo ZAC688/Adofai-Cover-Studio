@@ -49,6 +49,7 @@ def test_native_png_export_matches_full_resolution_preview(android_contract):
     button.tap()
     image=Image.open(io.BytesIO(file_bytes(page))).convert('RGBA')
     assert image.size==(1920,1080) and image.tobytes()==expected.tobytes()
+    assert page.evaluate('document.fonts.check(\'900 24px "CoverFont_noto_sans_sc"\')')
     expect(page.locator('[data-native-download-status]')).to_have_text('文件已保存到所选位置')
     assert page.evaluate('nativeFiles[0].mime')=='image/png'
     assert client.get('/api/project').json()['project']['titles'][0]['text']=='手机导出 PNG'

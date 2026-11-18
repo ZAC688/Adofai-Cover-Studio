@@ -8,8 +8,10 @@ export const builtinFonts:BuiltinFont[]=[{id:'system',label:'系统黑体 · 原
 const uploaded=new Map<string,UploadedFont>();
 const loaded=new Map<string,Promise<void>>();
 export function registerFonts(fonts:UploadedFont[]){for(const font of fonts)uploaded.set(font.id,font);}
+function renderedFont(id:string){return id==='system'&&typeof window!=='undefined'&&window.AndroidDevice?'noto-sans-sc':id;}
 function family(id:string){return 'CoverFont_'+id.replace(/-/g,'_');}
 export async function ensureFont(id='system'){
+  id=renderedFont(id);
   if(id==='system')return;
   if(!loaded.has(id)){
     const local=builtinFonts.find(font=>font.id===id),info=uploaded.get(id);
@@ -21,6 +23,7 @@ export async function ensureFont(id='system'){
   await loaded.get(id);
 }
 export function fontCSS(id='system',size:number){
+  id=renderedFont(id);
   const face=builtinFonts.find(font=>font.id===id);
   return `${face?.style==='italic'?'italic ':''}${face?.weight||900} ${size}px ${id==='system'?'':`"${family(id)}", `}"Microsoft YaHei", "Segoe UI", sans-serif`;
 }

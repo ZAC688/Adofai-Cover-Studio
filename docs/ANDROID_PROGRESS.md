@@ -56,6 +56,27 @@
 - 本阶段综合手机流程、真实 HTTP 与轨道/字体回归 72 项通过；更新 APK 的签名、资源哈希、指纹和架构检查 3 项通过。证据在本机 `artifacts/android/stage4-python.xml`、`file-junit-02.log`、`file-apk-integrity.xml` 等。上述主机与 JVM 检查不能替代 Android 系统选择器与 JNI 的实际运行验收。
 - 模拟器已尝试单核软件模式与内核日志，仍为 offline；观察到 QEMU 工作线程暂停，不能仅据缺少 WHPX 就断言唯一原因。尚未启用系统虚拟化或重启，继续等待用户对前述加速平台的答复。
 
+## 阶段 5：签名、最终回归与原生验收准备
+
+- 已补充 8 项实际 Android instrumentation 用例，覆盖真实 Python/NumPy/Pillow/OpenCV 导入、WebView/WebGL 2、three.js 与 Pixi 全分辨率像素变化、内嵌谱面窗口生成金色透明轨道、Java ONNX Runtime 数值一致性、九张已批准识别标注各自 IoU ≥90%、系统保存真实 PNG 和取消、SQLite 读回。测试包编译成功，但尚未在安卓系统执行，不能记为通过。
+- 新增独立模拟器接续脚本，拒绝物理手机与不合法编号；使用 `.debug` 独立应用，另检验真实 Android 进程停止／重开后的作品与版本号保持。测试素材只进入私有 AndroidTest APK，不进入用户 APK。
+- release APK 使用本地专用密钥签名，调试应用与用户应用数据隔离；密钥和凭据被 Git 忽略，重复构建验证并复用原身份，不静默重建。新增真实 keytool 身份复用／错密码保护测试通过。
+- 修复手机默认字体和 3D 随包字形不一致的风险：手机普通标题的默认字体也使用随包 Noto Sans SC，Windows 的系统字体规则保留。新增手机导出字体断言通过。
+- 签名版与调试版的资源、签名、ELF 架构及用户版签名身份共 7 项检查通过。首轮检查发现调试包仍是旧前端，已重建；权限断言核对到 AndroidX 自动加入的应用私有签名权限，增加精确权限集合和 signature 保护级别断言，未放宽到允许其他系统权限。失败报告保留。
+- 手机文件契约与签名测试共 6 项独立重跑通过。初轮浏览器重新加载与前端构建替换 `frontend/dist` 同时发生，已明确禁止这两者并发，保留首轮错误证据。最终 Java 测试 7 项通过，安卓 lint 为 0 错误、1 条需 JavaScript 的提示；应用仅允许本机资源，JS 是编辑器实际依赖，未关闭检查或隐藏提示。
+- **2026-11-18 用户批准启用 Windows 虚拟机监控程序平台；已从 Disabled 启用到 Enabled，RestartNeeded=True，没有自动重启。** 当前系统 HypervisorPresent=False，原生测试预检没有找到可用模拟器，结果明确记录 nativePassed=false。还需用户手动重启，再执行模拟器与 OPPO 实机验收。旧软件模拟失败证据仍保留，不能据启用组件就宣称已解决所有模拟器问题。
+- 全部主机回归完成：540 项 Python／界面／成品测试、52 项前端单测、7 项 Java 文件测试通过；类型、lint、构建退出码均为 0。540 项用时 1326.47 秒，0 失败、0 错误、0 跳过，源码和冻结 EXE 的可见窗口性能测试均按原门槛通过。保留一条原有依赖弃用提示，未隐藏告警。
+- 补充独立的 15 项用户原谱面与 9 项原生测试脚本单测共 24 项通过，其中 3 项目标保护与前述 540 项重复；本轮共 **620 项互不重复的主机／前端／JVM 测试通过**。原生测试结果判定要求八项具体用例都报告成功，跳过、假设失败、进程中断或缺用例均不接受；此判定器的合成协议单测不能替代真实安卓运行。
+- 完整证据：本地 `artifacts/android/all-tests-01.log`、`artifacts/final/all-tests.xml`、`artifacts/final/check-results.json`、`artifacts/android/private-charts-and-native-protocol.xml` 与 Gradle XML。原 Windows 0.8.1 最终报告已先复制到 `artifacts/android/pre-android-final-reports`，避免与本轮结果混淆。
+- 已保存签名候选包 `release/android-test-0.8.1-android.1/ADOFAI-Cover-Studio-0.8.1-android.1-test.apk`（161575959 字节），SHA-256 `dbbdc3df4604703d8b0a70281c38653abd9649e7bb094455ca4ab68f807ec674`。候选包通过签名、双架构及资源检查，**原生和 OPPO 验收仍未完成，当前不记为全部功能已在安卓通过**。
+
+### 手动重启后的接续点
+
+1. 检查 WHPX／虚拟机监控程序真正可用；以项目专属 `.testdata/android-avd` 启动 `adofai-api35`，等待 Android 完全启动，不触碰物理手机。
+2. 运行 `tools/test_android_device.py`，保留原生完整日志；失败先修复，不能减少九张样本或降低 90% IoU、模型数值与文件像素断言。
+3. 如修复涉及业务代码，重建 APK 并重跑受影响测试及最终完整回归。原生通过前不把候选包当作完成全部验收的成品。
+4. 核验最终用户 APK SHA-256，交付用户安装，并按 `ANDROID_ACCEPTANCE.md` 在 OPPO Reno12 实测。用户未要求向 GitHub 推送本分支或发布安卓 Release。
+
 ## 官方资料
 
 - [Android WebView](https://developer.android.com/develop/ui/views/layout/webapps/webview)

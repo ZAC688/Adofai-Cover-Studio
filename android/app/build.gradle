@@ -3,6 +3,9 @@ plugins {
     id 'com.chaquo.python'
 }
 
+def releaseIdentityFile = rootProject.file('signing/release.json')
+def releaseIdentity = releaseIdentityFile.exists() ? new groovy.json.JsonSlurper().parse(releaseIdentityFile) : null
+
 android {
     namespace 'com.zac688.adofaicoverstudio'
     compileSdk 35
@@ -16,15 +19,29 @@ android {
         ndk { abiFilters 'arm64-v8a', 'x86_64' }
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
+    signingConfigs {
+        if (releaseIdentity) {
+            release {
+                storeFile rootProject.file('signing/' + releaseIdentity.storeFile)
+                storePassword releaseIdentity.storePassword
+                keyAlias releaseIdentity.keyAlias
+                keyPassword releaseIdentity.keyPassword
+            }
+        }
+    }
     buildTypes {
-        debug { debuggable true }
-        release { minifyEnabled false }
+        debug { debuggable true; applicationIdSuffix '.debug' }
+        release {
+            minifyEnabled false
+            if (releaseIdentity) signingConfig signingConfigs.release
+        }
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
     androidResources { noCompress 'zip', 'onnx' }
+    sourceSets { androidTest.assets.srcDir 'build/generated/androidTestAssets' }
 }
 
 chaquopy {
@@ -54,4 +71,5 @@ dependencies {
     androidTestImplementation 'androidx.test:runner:1.6.2'
     androidTestImplementation 'androidx.test:rules:1.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
 }

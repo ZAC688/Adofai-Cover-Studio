@@ -43,7 +43,8 @@ def prepare():
     manifest_bytes=json.dumps(manifest, ensure_ascii=False, indent=2).encode('utf-8')
     (assets / 'resource-manifest.json').write_bytes(manifest_bytes)
     (assets / 'bundle-info.json').write_text(json.dumps({'resourceFingerprint':hashlib.sha256(manifest_bytes).hexdigest()}),encoding='utf-8')
-    drawable = ROOT / 'android/app/src/main/res/drawable'
+    (ROOT / 'android/app/src/main/res/drawable/app_icon.png').unlink(missing_ok=True)
+    drawable = ROOT / 'android/app/src/main/res/drawable-nodpi'
     drawable.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ROOT / 'frontend/public/app-icon.png', drawable / 'app_icon.png')
     print(f'Bundled {len(manifest)} offline resources; private fixtures excluded')

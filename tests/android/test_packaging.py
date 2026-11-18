@@ -9,12 +9,13 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 APK = ROOT / 'android/app/build/outputs/apk/debug/app-debug.apk'
+RELEASE_APK = ROOT / 'android/app/build/outputs/apk/release/app-release.apk'
 
 
-@pytest.fixture(scope='module')
-def apk():
-    assert APK.is_file(), 'Run tools/build-android.ps1 before the Android packaging tests'
-    with zipfile.ZipFile(APK) as bundle:
+@pytest.fixture(scope='module', params=[APK, RELEASE_APK], ids=['debug', 'release'])
+def apk(request):
+    assert request.param.is_file(), 'Build both debug and release APKs before Android packaging tests'
+    with zipfile.ZipFile(request.param) as bundle:
         assert bundle.testzip() is None
         yield bundle
 
@@ -54,9 +55,45 @@ def test_all_bundled_resources_match_manifest_and_exclude_private_material(apk):
             assert not name.lower().endswith(('.adofai', '.mp3', '.ogg', '.sqlite3', '.jks', '.keystore', '.docx'))
 
 
-def test_apk_signature_is_valid():
+def test_apk_signature_is_valid(apk):
     signer = ROOT / 'tools/android-sdk/build-tools/35.0.0/apksigner.bat'
     assert signer.is_file()
-    result = subprocess.run([str(signer), 'verify', '--verbose', str(APK)], capture_output=True, text=True, timeout=30)
+    result = subprocess.run([str(signer), 'verify', '--verbose', str(apk.filename)], capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
     assert 'Verifies' in result.stdout
+
+
+def test_release_is_separate_nondebuggable_and_signed_by_the_preserved_local_identity():
+    import os
+    import re
+    from tests.android.test_signing import keytool
+    aapt = ROOT / 'tools/android-sdk/build-tools/35.0.0/aapt.exe'
+    result = subprocess.run([str(aapt), 'dump', 'badging', str(RELEASE_APK)], capture_output=True, timeout=30)
+    assert result.returncode == 0
+    badging = result.stdout.decode('utf-8')
+    assert "package: name='com.zac688.adofaicoverstudio'" in badging
+    assert "versionName='0.8.1-android.1'" in badging
+    assert "sdkVersion:'29'" in badging and "targetSdkVersion:'35'" in badging
+    assert 'application-debuggable' not in badging
+    private_receiver = 'com.zac688.adofaicoverstudio.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
+    assert set(re.findall(r"uses-permission: name='([^']+)'", badging)) == {'android.permission.INTERNET', private_receiver}
+    manifest = subprocess.run([str(aapt), 'dump', 'xmltree', str(RELEASE_APK), 'AndroidManifest.xml'], capture_output=True, timeout=30)
+    assert manifest.returncode == 0
+    declaration = manifest.stdout.decode('utf-8').split('E: permission (', 1)[1].split('E: uses-permission (', 1)[0]
+    assert private_receiver in declaration and 'android:protectionLevel(0x01010009)=(type 0x11)0x2' in declaration
+    xml = manifest.stdout.decode('utf-8')
+    assert 'android:allowBackup(0x01010280)=(type 0x12)0x0' in xml
+    assert 'android:fullBackupContent' in xml and 'android:dataExtractionRules' in xml
+    identity = json.loads((ROOT/'android/signing/release.json').read_text())
+    environment = dict(os.environ, ADOFAI_KEY_PASSWORD=identity['storePassword'])
+    certificate = subprocess.run([str(keytool()), '-exportcert', '-keystore', str(ROOT/'android/signing'/identity['storeFile']),
+                                  '-storepass:env', 'ADOFAI_KEY_PASSWORD', '-alias', identity['keyAlias']],
+                                 env=environment, capture_output=True, timeout=30)
+    assert certificate.returncode == 0
+    digest = hashlib.sha256(certificate.stdout).hexdigest()
+    signer = ROOT/'tools/android-sdk/build-tools/35.0.0/apksigner.bat'
+    signed = subprocess.run([str(signer), 'verify', '--print-certs', str(RELEASE_APK)], capture_output=True, text=True, timeout=30)
+    assert signed.returncode == 0
+    assert f'certificate SHA-256 digest: {digest}' in signed.stdout
+    with zipfile.ZipFile(RELEASE_APK) as bundle:
+        assert not any(name.startswith(('assets/solid/', 'assets/model-reference')) for name in bundle.namelist())

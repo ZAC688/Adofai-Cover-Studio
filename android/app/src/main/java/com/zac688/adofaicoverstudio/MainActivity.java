@@ -40,6 +40,8 @@ public class MainActivity extends Activity {
     private TextView status;
     private ValueCallback<Uri[]> fileCallback;
     private volatile int runtimePort;
+    private volatile String startupFailure;
+    private volatile Uri lastSavedDocument;
     private boolean closing;
     private DownloadStore downloads;
     private volatile String pendingSave;
@@ -131,12 +133,19 @@ public class MainActivity extends Activity {
                 if (!Python.isStarted()) Python.start(new AndroidPlatform(getApplicationContext()));
                 runtimePort = Python.getInstance().getModule("android_entry").callAttr("start",
                     resources.getAbsolutePath(), new File(getFilesDir(), "work").getAbsolutePath()).toInt();
+                if(BuildConfig.DEBUG) {
+                    try(FileOutputStream ready=new FileOutputStream(new File(getCacheDir(),"runtime-ready.json"))) {
+                        ready.write(new JSONObject().put("port",runtimePort).put("pid",android.os.Process.myPid()).toString().getBytes(StandardCharsets.UTF_8));
+                        ready.getFD().sync();
+                    }
+                }
                 runOnUiThread(() -> {
                     if (!isFinishing() && !isDestroyed()) webView.loadUrl("http://127.0.0.1:" + runtimePort + "/");
                 });
-            } catch (Exception error) {
+            } catch (Throwable error) {
+                startupFailure=error.getClass().getSimpleName()+": "+String.valueOf(error.getMessage());
                 android.util.Log.e("AdofaiStartup", "Offline runtime startup failed", error);
-                runOnUiThread(() -> status.setText("启动失败，作品数据仍保留。\n请重新打开应用。\n" + error.getClass().getSimpleName()));
+                runOnUiThread(() -> {status.setTextIsSelectable(true);status.setText(getString(R.string.startup_failed,startupFailure));});
             }
         });
     }
@@ -210,6 +219,7 @@ public class MainActivity extends Activity {
                         while((count=input.read(buffer))!=-1) output.write(buffer,0,count);
                         output.flush();
                     }
+                    lastSavedDocument=destination;
                     downloadResult(id,"saved","");
                 } catch(Exception error) {
                     downloadResult(id,"error","文件保存失败，请检查所选位置或手机存储空间，再重新导出");
@@ -258,6 +268,8 @@ public class MainActivity extends Activity {
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType(transfer.mime);
                     intent.putExtra(Intent.EXTRA_TITLE,transfer.name);
+                    intent.putExtra(android.provider.DocumentsContract.EXTRA_INITIAL_URI,
+                        android.provider.DocumentsContract.buildDocumentUri("com.android.externalstorage.documents","primary:Download"));
                     try { startActivityForResult(intent,SAVE_FILE); }
                     catch(android.content.ActivityNotFoundException error) {
                         pendingSave=null;downloadResult(id,"error","无法打开系统保存界面，请确认系统文件管理器可用");
@@ -276,6 +288,8 @@ public class MainActivity extends Activity {
     }
 
     public int getRuntimePort() { return runtimePort; }
+    public String getStartupFailureForTests() { return BuildConfig.DEBUG?startupFailure:null; }
+    public Uri getLastSavedDocumentForTests() { return BuildConfig.DEBUG?lastSavedDocument:null; }
     public WebView getEditorWebView() { return webView; }
 
     @Override protected void onPause() {
