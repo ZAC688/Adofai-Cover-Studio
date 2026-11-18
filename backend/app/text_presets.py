@@ -7,7 +7,7 @@ import re
 import uuid
 from typing import Annotated,Literal
 
-from pydantic import Field,ValidationError,model_validator
+from .validation import Field,ValidationError,model_validator
 
 from .schema import Strict,Title,Effects,Shadow,Text3D
 from .filter_schema import FilterSpec,CATALOG

@@ -39,3 +39,16 @@ frontend/*.tsbuildinfo
 /generate_test/
 /discription.docx
 /video.docx
+
+# Android tools, generated assets and private signing material stay local.
+/tools/android-sdk/
+/tools/gradle-*/
+/tools/android-downloads/
+/tools/android-gradle-cache/
+/android/.gradle/
+/android/local.properties
+/android/**/build/
+/android/app/src/main/assets/runtime/
+/android/signing/
+*.jks
+*.keystore

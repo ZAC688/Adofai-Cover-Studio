@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Literal,Annotated
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from .validation import BaseModel, ConfigDict, Field, model_validator
 from .filter_schema import FilterSpec
 
 TitleId=Literal['title1','title2','title3','title4','title5']

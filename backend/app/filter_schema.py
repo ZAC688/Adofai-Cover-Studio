@@ -4,7 +4,7 @@ import math
 import re
 from pathlib import Path
 from typing import Literal
-from pydantic import BaseModel,ConfigDict,Field,JsonValue,model_validator
+from .validation import BaseModel,ConfigDict,Field,JsonValue,model_validator
 from experiments.p0 import resource_root
 
 root=resource_root()

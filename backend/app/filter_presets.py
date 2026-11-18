@@ -8,7 +8,7 @@ import uuid
 from copy import deepcopy
 from typing import Literal
 from PIL import Image
-from pydantic import BaseModel,ConfigDict,Field,ValidationError
+from .validation import BaseModel,ConfigDict,Field,ValidationError
 from .filter_schema import FilterSpec,CATALOG
 
 MAX_PRESET_BYTES=100_000_000
