@@ -78,7 +78,16 @@ public class SystemFileTest {
     }
 
     @Test public void realSystemCancelDoesNotReportSavedOrCloseTheEditor() throws Exception {
-        begin();saveButton();device.pressBack();result("cancelled");
+        begin();saveButton();
+        // Back first hides the IME and then unwinds DocumentsUI's folder stack.
+        // Complete the actual system cancel, stopping before sending Back to
+        // the editor itself. No saved/cancelled result is mocked here.
+        String editorPackage=activity.getActivity().getPackageName();
+        for(int step=0;step<8&&!editorPackage.equals(device.getCurrentPackageName());step++) {
+            device.pressBack();device.waitForIdle();
+        }
+        assertEquals("System picker must actually close before checking cancellation",editorPackage,device.getCurrentPackageName());
+        result("cancelled");
         assertNull(activity.getActivity().getLastSavedDocumentForTests());
         assertEquals("true",js("Boolean(document.querySelector('.mobile-tabs'))"));
     }

@@ -158,7 +158,7 @@ public class RuntimeSmokeTest {
         String frame="document.querySelector('iframe[title=轨道选段工具]')?.contentDocument";
         waitFor("Boolean("+frame+"?.querySelector('#track-style'))");
         assertEquals("\"gold\"",javascript(frame+".querySelector('#track-style').value"));
-        javascript("(()=>{const doc="+frame+";const resolution=doc.querySelector('#resolution');resolution.value='1920';resolution.dispatchEvent(new Event('change',{bubbles:true}));doc.querySelector('#export-png').click();})()");
+        javascript("(()=>{const doc="+frame+";for(const [id,value] of [['resolution','1920'],['aspect','16:9']]){const input=doc.querySelector('#'+id);input.value=value;input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));}doc.querySelector('#export-png').click();})()");
         waitFor("(()=>{const image=document.querySelector('img[alt=生成轨道预览]');return Boolean(image?.complete&&image.naturalWidth===1920);})()");
         String imageUrl=new JSONArray("["+javascript("document.querySelector('img[alt=生成轨道预览]').src")+"]").getString(0);
         byte[] png=binaryRequest("GET",new URL(imageUrl).getFile(),null,null);

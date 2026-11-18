@@ -77,6 +77,17 @@
 3. 如修复涉及业务代码，重建 APK 并重跑受影响测试及最终完整回归。原生通过前不把候选包当作完成全部验收的成品。
 4. 核验最终用户 APK SHA-256，交付用户安装，并按 `ANDROID_ACCEPTANCE.md` 在 OPPO Reno12 实测。用户未要求向 GitHub 推送本分支或发布安卓 Release。
 
+## 重启后的原生补验
+
+- Windows 重启后 HypervisorPresent=True，官方模拟器加速检查返回 0，WHPX 可用，项目独立 API 35 模拟器成功启动。使用的都是隔离 `.debug` 数据，没有连接或修改物理手机。
+- 第一轮实际执行 8 项原生测试：6 项通过，谱面预览和取消保存两项失败。定位到测试选择器仅派发 change、未派发 input，且没有显式设置受断言约束的 16:9；另一个测试只按一次返回，实际只收起键盘。补齐真实选择事件与画幅后，谱面仍按原断言验证 1920×1080、透明区域和金色像素，未降低要求。
+- 第二轮 7 项通过，系统返回还会退出目录层级，尚未真正取消。第三轮改为在系统界面内完成有上限的返回导航，并在返回编辑器前停止；断言仍要求系统窗口已关闭、JS 返回 cancelled、没有保存 URI、编辑器保留，不伪造取消结果。
+- 第三轮 **8 项安卓原生测试全部通过，0 失败、0 跳过**。真实 three.js／Pixi 像素、Pillow 谱面生成、Java ONNX Runtime 数值对照、九张识别图各自 IoU ≥90%、SQLite、系统保存 PNG 的尺寸和像素、实际取消均通过。随后独立停止并重启 Android 进程，PID 变化、完整作品及 revision 保持的验证通过。
+- 模拟器已开启飞行模式并关闭 Wi-Fi。Android 原生服务、处理与文件保存无须联网；最终签名用户 APK 也已在该环境安装并启动，横竖屏的上传入口和四个栏目均在屏幕范围内，真实截图已目视核验。
+- 用户 APK 的信息窗口截图实际显示作者 ZAC688、版本 0.8.1-android.1 和手机离线运行方式。附加检查脚本未能从 WebView 的系统无障碍树读取 dl 文本，保留了该断言失败证据；该项以真实截图目视核验，未宣称系统树自动断言通过。
+- 原生证据：本机 `artifacts/android/native/instrumentation.log`、`results.json`、两轮 `failed-*` 与完整日志；用户包截图位于 `artifacts/android/release-device`。此前“原生未执行／待重启”的描述为重启前记录，以本节结果为最新状态。
+- 正在按用户要求重新运行最终完整回归；全部结束后更新交付记录。OPPO Reno12 的真实系统、键盘和文件管理器体验仍待用户按 `ANDROID_ACCEPTANCE.md` 验收。
+
 ## 官方资料
 
 - [Android WebView](https://developer.android.com/develop/ui/views/layout/webapps/webview)
