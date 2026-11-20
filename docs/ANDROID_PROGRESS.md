@@ -104,3 +104,19 @@
 - [Chaquopy 原生包仓库](https://chaquo.com/pypi-13.1/)
 - [Android 命令行工具](https://developer.android.com/studio#command-tools)
 - [Android 模拟器加速](https://developer.android.com/studio/run/emulator-acceleration)
+
+## 16KB 兼容性修复 · 2026-11-20
+
+- 用户已确认先前 0.8.1-android.1 在 OPPO Reno12 上功能验收通过。跨品牌检查发现，原 APK 外层 ZIP 和 `lib/` 对齐通过，但 `.imy` 内的 Pillow、NumPy、OpenCV、Brotli 及部分传递依赖仍有 4KB 库，另有 RELRO 布局风险；旧版在官方 16KB 镜像中实际无法导入 Pillow。此前外层检查没有覆盖这一缺口，现已补齐，保留基线失败 JSON 与运行日志。
+- 安卓版本更新为 **0.8.1-android.2 / 80102**，沿用原包名和签名。升级到 Python 3.13.16、NumPy 1.26.2、Pillow 11.0.0、Brotli 1.1.0、OpenBLAS 0.3.33；使用官方 NDK r28c 从固定源码编译 FreeType 2.9.1、libjpeg-turbo 3.1.3 和 OpenCV 4.12.0 的 ARM64／x86_64 库。不修改轨道识别算法或降低九张样本各自 IoU ≥90% 的门槛。
+- 新增完整 APK 审计，递归按内容检查压缩包内全部 ELF，包含 `.imy` 和 `.so.3`：检查各 LOAD 的对齐及地址关系、RELRO 尾部可写数据、SDK `zipalign -P 16`。最终调试／用户包均为 **每架构 99 个 ELF、共 198 个，全部通过**。12 项审计器单测涵盖旧 4KB 库、仅改对齐字段、RELRO 陷阱、嵌套传递依赖及损坏文件。
+- 缺少对应官方兼容 wheel 的组件从源码构建；修复 OpenCV Android Python 构建入口和其参数替换破坏 NDK `--no-undefined-version` 的问题。去除调试信息、映射编译路径并清理生成的构建信息中的本机路径，原生构建不通过修改 ELF 头伪造兼容。许可证按完整官方源码字节核验并保留在公共资源归档中。
+- 发现 Gradle 只根据 `--find-links` 字符串保留旧 wheel 的缓存问题，已跟踪实际 `install*PythonRequirements` 任务的 wheel 输入，新增 APK 原生库与六份源码构建 wheel 的逐字节哈希对照。首轮路径／缓存失败及许可证归档定位失败报告均保留；许可证检查改为与上游源码完整字节一致，避免错误的文件大小假设。
+- API 35 的早期官方 16KB 镜像完成九项功能测试，但随后旧版系统 Chromium 的 MemoryInfra 等组件延迟崩溃；保留系统堆栈，不能把首轮短暂通过当作稳定性通过。改用官方 API 36 的 16KB 镜像，系统 WebView 133.0.6943.137；明确设置并核对 `bionic.linker.16kb.app_compat.enabled=false`、`pm.16kb.app_compat.disabled=true`，`PAGE_SIZE=16384`。
+- 最终 API 36／16KB 和 API 35／4KB **各九项原生测试全部通过**，均验证真实 JNI 依赖、NumPy BLAS、字体和 PNG/JPEG 编解码、three.js／Pixi 全分辨率像素、谱面预览、ONNX 数值、九张识别样本、系统保存／取消和数据库；两个环境还各通过真实进程重启、90 秒同进程持续响应与四栏目反复切换（18 次检查）。首次持续检查因 WebView 不支持浏览器下载管理命令失败，测试连接改用 Playwright 的 `no_defaults`，保留全部响应与作品不变断言。
+- 4KB 旧版到新版覆盖升级通过，完整作品及 revision、**85 份旧素材文件的哈希**保持一致；随后恢复测试作品。实际签名用户 APK 在断网的 16KB 系统中安装、启动，横竖屏上传入口和底部四栏目均在屏幕内，信息截图目视确认 ZAC688 与 0.8.1-android.2。
+- 最终运行 `tools/test-all.ps1 -VisiblePerformanceTests`：**569 项项目回归、52 项前端单测全部通过**，569 项用时 1095.65 秒（18 分 15 秒），0 失败、0 错误、0 跳过；类型、lint、构建退出码均为 0。另有 15 项原谱面回归、7 项 Java 文件测试、4KB／16KB 各 9 项原生测试通过，共 **661 个测试执行结果通过**；跨两种页大小重复执行的九项明确分别统计。包完整性等 11 项检查和原生工具／判定器 28 项单测已计入 569 项，不重复累加。持续响应与覆盖升级另列为集成验收。Android lint 为 0 错误、1 条原有 JavaScript 提示，Python 回归保留一条原有依赖弃用提示。
+- 本机交付候选：`release/android-test-0.8.1-android.2/ADOFAI-Cover-Studio-0.8.1-android.2-test.apk`，159189872 字节，SHA-256 `57034894264caa267eaf0406113a0b1ffd004c4437754858a0d03e5c0aa861cb`。尚未推送 GitHub 或发布安卓 Release；原 Windows 0.8.1 分发包保持不变。新版 ARM64 库已全部静态审计，但 16KB 原生运行验证使用 x86_64 模拟器，不能代替不同品牌 ARM64 实机验证。
+- 证据位于本机 `artifacts/android/16kb`，包含各轮失败日志、两个最终原生结果、升级结果、签名包截图、完整 ELF 明细、单测和最终回归报告。测试私有截图、AndroidTest APK、签名密钥和用户数据库不进入交付包。
+
+补充官方依据：[Android 16KB 指南](https://developer.android.com/guide/practices/page-sizes)、[Chaquopy 16KB 支持及旧 wheel 限制](https://chaquo.com/chaquopy/chaquopy-version-17-0-0/)、[官方 OpenBLAS 0.3.33 构建](https://github.com/chaquo/chaquopy/pull/1457)、[Python 官方 NuGet 构建工具说明](https://docs.python.org/3.13/using/windows.html#the-nuget-org-packages)。

@@ -23,7 +23,7 @@ def apk(request):
 def test_both_target_and_emulator_have_real_python_sqlite_and_onnx(apk):
     for abi, architecture in (('arm64-v8a', 183), ('x86_64', 62)):
         # libsqlite3_chaquopy is only an ABI shim; _python contains SQLite itself.
-        for library in ('libpython3.10.so', 'libsqlite3_python.so', 'libonnxruntime.so', 'libonnxruntime4j_jni.so'):
+        for library in ('libpython3.13.so', 'libsqlite3_python.so', 'libonnxruntime.so', 'libonnxruntime4j_jni.so'):
             path = f'lib/{abi}/{library}'
             assert apk.getinfo(path).file_size > 10000
             header = apk.read(path)[:20]
@@ -72,7 +72,7 @@ def test_release_is_separate_nondebuggable_and_signed_by_the_preserved_local_ide
     assert result.returncode == 0
     badging = result.stdout.decode('utf-8')
     assert "package: name='com.zac688.adofaicoverstudio'" in badging
-    assert "versionName='0.8.1-android.1'" in badging
+    assert "versionName='0.8.1-android.2'" in badging
     assert "sdkVersion:'29'" in badging and "targetSdkVersion:'35'" in badging
     assert 'application-debuggable' not in badging
     private_receiver = 'com.zac688.adofaicoverstudio.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION'
@@ -97,3 +97,37 @@ def test_release_is_separate_nondebuggable_and_signed_by_the_preserved_local_ide
     assert f'certificate SHA-256 digest: {digest}' in signed.stdout
     with zipfile.ZipFile(RELEASE_APK) as bundle:
         assert not any(name.startswith(('assets/solid/', 'assets/model-reference')) for name in bundle.namelist())
+
+
+def test_all_native_dependencies_including_nested_archives_support_16kb(apk):
+    from tools.check_android_pages import audit
+    result = audit(Path(apk.filename), ROOT/'tools/android-sdk/build-tools/35.0.0/zipalign.exe')
+    assert set(result['counts']) == {'arm64-v8a', 'x86_64'}
+    assert min(result['counts'].values()) >= 90, 'Both embedded Python runtimes must be audited'
+    assert result['passed'], [record for record in result['libraries'] if record['issues']]
+
+
+def test_source_built_libraries_exclude_debug_data_and_local_workspace_paths(apk):
+    for abi in ('arm64-v8a', 'x86_64'):
+        with zipfile.ZipFile(io.BytesIO(apk.read(f'assets/chaquopy/requirements-{abi}.imy'))) as libraries:
+            for name in ('cv2.so', 'chaquopy/lib/libfreetype.so', 'chaquopy/lib/libjpeg_chaquopy.so'):
+                data = libraries.read(name)
+                assert ROOT.as_posix().encode() not in data
+                assert str(ROOT).encode() not in data
+                assert b'.debug_info\0' not in data
+                package = {'cv2.so': 'opencv_python_headless-4.12.0.88-1-cp313-cp313-',
+                           'chaquopy/lib/libfreetype.so': 'chaquopy_freetype-2.9.1-3-py3-none-',
+                           'chaquopy/lib/libjpeg_chaquopy.so': 'chaquopy_libjpeg-3.1.3-1-py3-none-'}[name]
+                wheel = ROOT/'tools/android-downloads/native-16kb/wheels'/f'{package}android_24_{abi.replace("-", "_")}.whl'
+                with zipfile.ZipFile(wheel) as built:
+                    assert hashlib.sha256(data).digest() == hashlib.sha256(built.read(name)).digest(), 'APK contains a stale native wheel'
+    # Chaquopy deduplicates non-native files into the common archive.
+    with zipfile.ZipFile(io.BytesIO(apk.read('assets/chaquopy/requirements-common.imy'))) as common:
+        work = ROOT/'tools/android-downloads/native-16kb'
+        licenses = {
+            'chaquopy_freetype-2.9.1.dist-info/licenses/FTL.TXT': work/'freetype-2.9.1/freetype-VER-2-9-1/docs/FTL.TXT',
+            'opencv_python_headless-4.12.0.88.dist-info/licenses/cpufeatures/LICENSE': work/'opencv-4.12.0/opencv-4.12.0/3rdparty/cpufeatures/LICENSE',
+            'opencv_python_headless-4.12.0.88.dist-info/licenses/kleidicv/kleidicv-0.5.0/LICENSES/Apache-2.0.txt': work/'build/arm64-v8a/opencv/3rdparty/kleidicv/kleidicv-0.5.0/LICENSES/Apache-2.0.txt',
+        }
+        for name, source in licenses.items():
+            assert common.read(name) == source.read_bytes(), 'Bundled license differs from the upstream source'

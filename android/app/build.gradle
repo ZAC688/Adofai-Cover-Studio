@@ -14,8 +14,8 @@ android {
         applicationId 'com.zac688.adofaicoverstudio'
         minSdk 29
         targetSdk 35
-        versionCode 80101
-        versionName '0.8.1-android.1'
+        versionCode 80102
+        versionName '0.8.1-android.2'
         ndk { abiFilters 'arm64-v8a', 'x86_64' }
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
@@ -46,17 +46,21 @@ android {
 
 chaquopy {
     defaultConfig {
-        version '3.10'
+        version '3.13'
         buildPython System.getenv('ADOFAI_BUILD_PYTHON') ?: 'python'
         pip {
+            options '--find-links', rootProject.file('../tools/android-downloads/native-16kb/wheels').absolutePath
             def proxy = System.getenv('HTTPS_PROXY')
             if (proxy) { options '--proxy', proxy }
             install 'pydantic==1.10.26'
-            install 'numpy==1.23.3'
-            install 'Pillow==9.2.0'
-            install 'opencv-python-headless==4.5.1.48'
+            install 'numpy==1.26.2'
+            install 'Pillow==11.0.0'
+            install 'opencv-python-headless==4.12.0.88'
+            install 'chaquopy-openblas==0.3.33'
+            install 'chaquopy-freetype==2.9.1'
+            install 'chaquopy-libjpeg==3.1.3'
             install 'fonttools==4.65.0'
-            install 'Brotli==1.0.7'
+            install 'Brotli==1.1.0'
         }
     }
     sourceSets {
@@ -72,4 +76,14 @@ dependencies {
     androidTestImplementation 'androidx.test:rules:1.6.1'
     androidTestImplementation 'androidx.test.ext:junit:1.2.1'
     androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.3.0'
+}
+
+// Chaquopy treats --find-links as an option string. Also track actual wheel
+// bytes so a rebuilt dependency cannot leave an older .imy package cached.
+tasks.configureEach {
+    if (name == 'installDebugPythonRequirements' || name == 'installReleasePythonRequirements') {
+        inputs.files(fileTree(rootProject.file('../tools/android-downloads/native-16kb/wheels')) {
+            include '*.whl'
+        }).withPropertyName('native16kbWheels').withPathSensitivity(PathSensitivity.RELATIVE)
+    }
 }

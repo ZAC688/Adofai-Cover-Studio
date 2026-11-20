@@ -93,8 +93,9 @@ public class RuntimeSmokeTest {
 
     @Test public void nativeDependenciesAndActualOfflineWebViewBoot() throws Exception {
         JSONObject dependencies=new JSONObject(Python.getInstance().getModule("android_entry").callAttr("diagnostics").toString());
-        assertEquals("1.23.3",dependencies.getString("numpy"));assertEquals("1.10.26",dependencies.getString("pydantic"));
-        assertTrue(dependencies.getString("opencv").startsWith("4.5.1"));assertEquals("9.2.0",dependencies.getString("pillow"));
+        assertEquals(3,dependencies.getJSONArray("python").getInt(0));assertEquals(13,dependencies.getJSONArray("python").getInt(1));
+        assertEquals("1.26.2",dependencies.getString("numpy"));assertEquals("1.10.26",dependencies.getString("pydantic"));
+        assertEquals("4.12.0",dependencies.getString("opencv"));assertEquals("11.0.0",dependencies.getString("pillow"));
         assertEquals(253,new JSONArray(request("GET","/api/stickers",null,null)).length());
         long deadline=System.currentTimeMillis()+60_000;
         while(!"true".equals(javascript("Boolean(document.querySelector('.mobile-tabs'))")) && System.currentTimeMillis()<deadline)Thread.sleep(100);
@@ -107,6 +108,27 @@ public class RuntimeSmokeTest {
         long deadline=System.currentTimeMillis()+60_000;
         while(!"true".equals(javascript(expression))&&System.currentTimeMillis()<deadline)Thread.sleep(100);
         assertEquals("Native WebView condition: "+expression,"true",javascript(expression));
+    }
+
+    @Test public void nativeMemoryPagesBlasFontAndJpegActuallyWork() throws Exception {
+        String code="import os, io, json, numpy as np\n"+
+            "from PIL import Image, ImageDraw, ImageFont\n"+
+            "from experiments.p0 import resource_root\n"+
+            "a=np.array([[4.,1.],[1.,3.]])\n"+
+            "assert np.allclose(a @ np.linalg.inv(a), np.eye(2), atol=1e-12)\n"+
+            "image=Image.new('RGB',(256,128),(40,100,180))\n"+
+            "font=ImageFont.truetype(str(resource_root()/'frontend/dist/fonts/noto-sans-sc.ttf'),32)\n"+
+            "ImageDraw.Draw(image).text((8,8),'轨道 ADOFAI',font=font,fill='white')\n"+
+            "assert len(set(image.getdata()))>10\n"+
+            "for format in ('PNG','JPEG'):\n"+
+            " stream=io.BytesIO();image.save(stream,format=format);stream.seek(0)\n"+
+            " decoded=Image.open(stream);decoded.load();assert decoded.size==(256,128)\n"+
+            "native_page_result=json.dumps({'pages':os.sysconf('SC_PAGE_SIZE'),'jpeg':True,'blas':True,'font':True})\n";
+        var scope=Python.getInstance().getModule("builtins").callAttr("dict");
+        Python.getInstance().getModule("builtins").callAttr("exec",code,scope);
+        JSONObject result=new JSONObject(scope.callAttr("get","native_page_result").toString());
+        assertEquals(android.system.Os.sysconf(android.system.OsConstants._SC_PAGESIZE),result.getLong("pages"));
+        assertTrue(result.getBoolean("jpeg"));assertTrue(result.getBoolean("blas"));assertTrue(result.getBoolean("font"));
     }
 
     private Bitmap renderProject(JSONObject project) throws Exception {

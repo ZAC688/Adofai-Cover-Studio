@@ -9,17 +9,20 @@ try {
     $env:JAVA_HOME=$taskJavaHome
     $env:ANDROID_HOME=Join-Path $projectRoot 'tools/android-sdk'
     $env:GRADLE_USER_HOME=Join-Path $projectRoot 'tools/android-gradle-cache'
-    $env:ADOFAI_BUILD_PYTHON=Join-Path $projectRoot '.venv/Scripts/python.exe'
+    $hostPython=Join-Path $projectRoot '.venv/Scripts/python.exe'
+    & $hostPython -m tools.build_android_native
+    if($LASTEXITCODE -ne 0){throw '16KB Android dependency source build failed'}
+    $env:ADOFAI_BUILD_PYTHON=Join-Path $projectRoot 'tools/android-downloads/native-16kb/python.3.13.11/tools/python.exe'
     if($Task -eq 'assembleRelease'){
-        & $env:ADOFAI_BUILD_PYTHON tools/sign_android.py --keytool (Join-Path $taskJavaHome 'bin/keytool.exe')
+        & $hostPython tools/sign_android.py --keytool (Join-Path $taskJavaHome 'bin/keytool.exe')
         if($LASTEXITCODE -ne 0){throw 'Release identity could not be verified; existing keys are preserved'}
     }
     & node tools/npm/package/bin/npm-cli.js --prefix frontend run build
     if($LASTEXITCODE -ne 0){throw 'Frontend build failed'}
-    & $env:ADOFAI_BUILD_PYTHON tools/prepare_android.py
+    & $hostPython tools/prepare_android.py
     if($LASTEXITCODE -ne 0){throw 'Android resource preparation failed'}
     if($Task -in @('assembleDebugAndroidTest','connectedDebugAndroidTest')){
-        & $env:ADOFAI_BUILD_PYTHON tools/prepare_android_tests.py
+        & $hostPython tools/prepare_android_tests.py
         if($LASTEXITCODE -ne 0){throw 'Android private test fixture preparation failed'}
     }
     $arguments=@('-p','android','--console=plain','--stacktrace',$Task)
@@ -29,4 +32,9 @@ try {
     }
     & ./tools/gradle-8.11.1/bin/gradle.bat @arguments
     if($LASTEXITCODE -ne 0){throw "Android $Task failed"}
+    if($Task -in @('assembleDebug','assembleRelease')){
+        $variant=if($Task -eq 'assembleRelease'){'release'}else{'debug'}
+        & $hostPython tools/check_android_pages.py "android/app/build/outputs/apk/$variant/app-$variant.apk" --output "artifacts/android/16kb/$variant-audit.json"
+        if($LASTEXITCODE -ne 0){throw 'APK failed the complete 16KB native library and ZIP audit'}
+    }
 } finally {Pop-Location}

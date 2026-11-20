@@ -16,6 +16,7 @@ APP = 'com.zac688.adofaicoverstudio.debug'
 EXPECTED_NATIVE = {
     ('RuntimeSmokeTest', name) for name in (
         'nativeDependenciesAndActualOfflineWebViewBoot',
+        'nativeMemoryPagesBlasFontAndJpegActuallyWork',
         'actualThreeJsAndPixiChangeFullResolutionAndroidPixels',
         'actualEmbeddedChartFramePreviewsNativeGoldTrack',
         'javaOnnxRuntimeMatchesTheOriginalModelReference',
@@ -66,13 +67,18 @@ class Device:
             raise RuntimeError('ADB operation failed: '+result.stderr.decode(errors='replace')[:500])
         return result.stdout.decode('utf-8', errors='replace').strip()
 
-    def validate(self):
+    def validate(self, expected_page_size=None):
         if self.adb('get-state') != 'device':
             raise RuntimeError('The emulator has not booted; native tests were not run')
         if self.adb('shell', 'getprop', 'ro.kernel.qemu') != '1':
             raise ValueError('Not an isolated Android emulator')
         if self.adb('shell', 'getprop', 'sys.boot_completed') != '1':
             raise RuntimeError('Android boot is incomplete')
+        page_size = int(self.adb('shell', 'getconf', 'PAGE_SIZE'))
+        if expected_page_size is not None and page_size != expected_page_size:
+            raise ValueError(f'Required {expected_page_size}-byte Android pages, got {page_size}; tests were not run')
+        return {'pageSize': page_size, 'sdk': self.adb('shell', 'getprop', 'ro.build.version.sdk'),
+                'abi': self.adb('shell', 'getprop', 'ro.product.cpu.abi')}
 
     def ready(self):
         self.adb('shell', 'am', 'start', '-W', '-n', APP+'/com.zac688.adofaicoverstudio.MainActivity')
@@ -128,17 +134,49 @@ class Device:
         if self.forward:
             self.adb('forward', '--remove', 'tcp:'+str(self.forward))
 
+    def stability(self, duration=90):
+        """Observe the real WebView after restart, not just the HTTP ready flag."""
+        from playwright.sync_api import sync_playwright
+        pid = self.ready()
+        port = self.adb('forward', 'tcp:0', 'localabstract:webview_devtools_remote_'+str(pid))
+        initial = self.request('/api/project')
+        checks = 0
+        try:
+            with sync_playwright() as playwright:
+                # WebView exposes page targets but not Chrome's browser-context
+                # download manager. Leave its native system file handling intact.
+                browser = playwright.chromium.connect_over_cdp('http://127.0.0.1:'+port, no_defaults=True, timeout=60_000)
+                try:
+                    page = next(page for context in browser.contexts for page in context.pages if page.url.startswith('http://127.0.0.1:'))
+                    page.locator('.mobile-tabs').wait_for(state='visible', timeout=60_000)
+                    page.wait_for_function("document.querySelector('canvas[aria-label=封面画布]')?.getAttribute('aria-busy')==='false'", timeout=60_000)
+                    deadline = time.monotonic()+duration
+                    while time.monotonic()<deadline:
+                        assert int(self.adb('shell','pidof',APP))==pid, 'The app process crashed or restarted after readiness'
+                        page.locator('.mobile-tabs button').nth(checks % 4).click(timeout=10_000)
+                        assert page.locator('canvas[aria-label=封面画布]').evaluate('(canvas)=>canvas.width>0&&canvas.height>0')
+                        assert self.request('/api/project')==initial, 'Switching panels changed the saved work'
+                        checks += 1
+                        time.sleep(5)
+                finally:
+                    browser.close()
+        finally:
+            self.adb('forward','--remove','tcp:'+port)
+        return {'passed':True, 'seconds':duration, 'responsiveChecks':checks, 'sameProcess':True}
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--serial', required=True)
+    parser.add_argument('--page-size', type=int, choices=[4096, 16384])
+    parser.add_argument('--report-dir', type=Path, default=ROOT/'artifacts/android/native')
     args = parser.parse_args()
-    report_root = ROOT/'artifacts/android/native'
+    report_root = args.report_dir
     report_root.mkdir(parents=True, exist_ok=True)
     report = {'nativePassed': False, 'processRestartPassed': False}
     device = Device(args.serial)
     try:
-        device.validate()
+        report['device'] = device.validate(args.page_size)
         for relative in ('debug/app-debug.apk', 'androidTest/debug/app-debug-androidTest.apk'):
             path = ROOT/'android/app/build/outputs/apk'/relative
             if not path.is_file():
@@ -149,6 +187,7 @@ def main():
         report.update(nativePassed=True, nativeTests=verify_instrumentation(output))
         report['restart'] = device.persistence()
         report['processRestartPassed'] = True
+        report['stability'] = device.stability()
         print('Native Android tests and actual process-restart persistence passed')
     except Exception as error:
         report['error'] = str(error)

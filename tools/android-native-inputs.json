@@ -1,0 +1,52 @@
+[
+  {
+    "url": "https://chaquo.com/pypi-13.1/brotli/Brotli-1.1.0-0-cp313-cp313-android_24_arm64_v8a.whl",
+    "sha256": "e70422134ff6c4b4989e9cbf04c77a13f1cf270d3b856aa85de19ba2a775665b",
+    "kind": "wheel"
+  },
+  {
+    "url": "https://chaquo.com/pypi-13.1/brotli/Brotli-1.1.0-0-cp313-cp313-android_24_x86_64.whl",
+    "sha256": "f00fcc6f89fb7090daee667ecb6a816678a4057c992fc77b9539d053725e9faa",
+    "kind": "wheel"
+  },
+  {
+    "url": "https://chaquo.com/pypi-upstream/chaquopy-openblas/chaquopy_openblas-0.3.33-2-py3-none-android_24_arm64_v8a.whl",
+    "sha256": "c97fd3a04ba64cf0d442c6fcbd1ab631d36ab05113d11767eec69b94792a8ba1",
+    "kind": "wheel"
+  },
+  {
+    "url": "https://chaquo.com/pypi-upstream/chaquopy-openblas/chaquopy_openblas-0.3.33-2-py3-none-android_24_x86_64.whl",
+    "sha256": "2eb0536603ceac39fbd10135693509a6c8a1f0edf07508aa5646629f1cbbbf32",
+    "kind": "wheel"
+  },
+  {
+    "url": "https://chaquo.com/pypi-13.1/numpy/numpy-1.26.2-0-cp313-cp313-android_24_arm64_v8a.whl",
+    "sha256": "05db9adc14aa49f075a5ea5c59559c361e54efd926f321eddd3b37e2fd05b721",
+    "kind": "wheel"
+  },
+  {
+    "url": "https://chaquo.com/pypi-13.1/numpy/numpy-1.26.2-0-cp313-cp313-android_24_x86_64.whl",
+    "sha256": "5b24863b756d2a0adc0405a7c1a74f9acfd7c3aa66b920c8760daafc12a26da7",
+    "kind": "wheel"
+  },
+  {
+    "url": "https://chaquo.com/pypi-13.1/pillow/pillow-11.0.0-0-cp313-cp313-android_24_arm64_v8a.whl",
+    "sha256": "0d380685ae11d55ab6ac8152b1eb79999913c458f412fa50d7cc9157558bd174",
+    "kind": "wheel"
+  },
+  {
+    "url": "https://chaquo.com/pypi-13.1/pillow/pillow-11.0.0-0-cp313-cp313-android_24_x86_64.whl",
+    "sha256": "5a9a22a405d55126efa6dad46d700e118ec2ff177d9a793050336d54fc0ed55b",
+    "kind": "wheel"
+  },
+  {
+    "url": "https://repo.maven.apache.org/maven2/com/chaquo/python/target/3.13.16-0/target-3.13.16-0-arm64-v8a.zip",
+    "sha256": "fae8cfd4d3910b6f978b22279fe820c0c6ba49d0ea20f7b106aa6130f1c8f355",
+    "kind": "python-target"
+  },
+  {
+    "url": "https://repo.maven.apache.org/maven2/com/chaquo/python/target/3.13.16-0/target-3.13.16-0-x86_64.zip",
+    "sha256": "77a6a3325aff0a171c36c11c8c3b2204a53783a3d42c29cff10a5ddecee5bfb6",
+    "kind": "python-target"
+  }
+]
