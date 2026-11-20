@@ -2,7 +2,7 @@
 
 ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Windows 本地桌面工具。当前版本 **0.8.1**，作者 **ZAC688**。
 
-安卓测试版 **0.8.1-android.2** 修复 16KB 内存页兼容性，保留离线编辑功能并适配横竖屏。4KB／16KB 原生环境测试已通过；此前 0.8.1-android.1 已由用户在 OPPO Reno12 完成功能验收，新版仍可在手机上覆盖更新复测。安卓安装包尚未发布到 GitHub Release。手机使用方法见 [安卓说明](docs/ANDROID_GUIDE.md)，测试结果见 [安卓开发记录](docs/ANDROID_PROGRESS.md)。
+安卓测试版 **0.8.1-android.2** 修复 16KB 内存页兼容性，保留离线编辑功能并适配横竖屏。4KB／16KB 原生环境测试已通过；此前 0.8.1-android.1 已由用户在 OPPO Reno12 完成功能验收，新版仍可在手机上覆盖更新复测。安装包见 [安卓版 GitHub Release](https://github.com/ZAC688/Adofai-Cover-Studio/releases/tag/v0.8.1-android.2)。手机使用方法见 [安卓说明](docs/ANDROID_GUIDE.md)，测试结果见 [安卓开发记录](docs/ANDROID_PROGRESS.md)。
 
 ## 项目解决什么问题
 
@@ -52,7 +52,7 @@ ADOFAI Cover Studio 是用于制作《冰与火之舞》音游视频封面的 Wi
 
 ### 使用安卓测试包
 
-将 `ADOFAI-Cover-Studio-0.8.1-android.2-test.apk` 传到手机，通过系统文件管理器打开安装。需要 Android 10 或更高版本、64 位系统、系统 WebView 支持 WebGL 2；无需单独安装浏览器、Python 或其他开发工具。旧版用户选择覆盖更新即可继续使用本机作品。
+下载 [ADOFAI-Cover-Studio-0.8.1-android.2-test.apk](https://github.com/ZAC688/Adofai-Cover-Studio/releases/download/v0.8.1-android.2/ADOFAI-Cover-Studio-0.8.1-android.2-test.apk)，传到手机后通过系统文件管理器打开安装。需要 Android 10 或更高版本、64 位系统、系统 WebView 支持 WebGL 2；无需单独安装浏览器、Python 或其他开发工具。旧版用户选择覆盖更新即可继续使用本机作品。
 
 竖屏使用上方预览和底部“对象／属性／光效／滤镜”，横屏自动改为左右布局；参数可滚动。文件导入、PNG／SVG 和预设导出通过系统文件界面进行。手机与 Windows 各自保存作品，预设 JSON 可以交换；卸载或清除应用数据会删除手机本机作品。
 
